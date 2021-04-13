@@ -1,4 +1,5 @@
 <?php
+
 session_abort();
 session_start();
 
@@ -7,6 +8,12 @@ require_once '../Clases/Conexion.php';
 
 if (isset($_REQUEST['goToRegister'])) {
     header('Location: ../Vistas/register.php');
+    die();
+}
+
+if (isset($_REQUEST['goToLogin'])) {
+    header('Location: ../Vistas/login.php');
+    die();
 }
 
 if (isset($_REQUEST['btn_register'])) {
@@ -27,7 +34,7 @@ if (isset($_REQUEST['btn_register'])) {
     $personaAux->setName($name);
     $personaAux->setSurname($surname);
     $personaAux->setEmail($email);
-    $personaAux->setPasswd(password_hash($password, 1));
+    $personaAux->setPasswd($password);
     $personaAux->setFecNac($fecNac);
     $personaAux->setCountry($country);
     $personaAux->setCity($city);
@@ -40,8 +47,47 @@ if (isset($_REQUEST['btn_register'])) {
             $_SESSION['mensaje'] = 'Registro completado, inicie sesión';
             header('Location: ../Vistas/login.php');
         }
-    }else{
+    } else {
         $_SESSION['mensaje'] = 'Error, no se puede registrar esta dirección de correo electrónico';
         header('Location: ../Vistas/register.php');
     }
+    die();
+}
+
+if (isset($_REQUEST['btn_login'])) {
+
+    $email = $_REQUEST['login_email'];
+    $passwd = $_REQUEST['login_passwd'];
+
+    if (Conexion::existeUsuario($email)) {
+        if (Conexion::verificarInicioSesion($email, $passwd)) {
+            $personaAux = Conexion::getUserLogin($email);
+            $_SESSION['usuarioLogin'] = $personaAux;
+            switch ($personaAux->getRol()) {
+                case 'Administrador':
+                    //Redirigir a Admin
+                    break;
+                case 'Usuario':
+                    //Redirigir a usuario
+                    switch ($personaAux->getStatus()) {
+                        case 1:
+                            header('Location: ../Vistas/preferenciasUsuario.php');
+                            break;
+                        case 2:
+                            header('Location: ../Vistas/panelPrincipalUsuario.php');
+                            break;
+                    }
+
+                    break;
+            }
+        }else{
+            $_SESSION['mensaje'] = 'Usuario y/o contraseña incorrectos';
+            header('Location: ../Vistas/login.php');
+        }
+    }else{
+        $_SESSION['mensaje'] = 'No se encuentra el usuario';
+        header('Location: ../Vistas/login.php');
+    }
+
+    die();
 }

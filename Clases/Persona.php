@@ -24,6 +24,7 @@ class Persona {
     private $sex;
     private $description;
     private $status;
+    private $rol;
 
     function __construct() {
         
@@ -73,7 +74,11 @@ class Persona {
         return $this->status;
     }
 
-    function setId($id): void {
+    function getRol() {
+        return $this->rol;
+    }
+
+        function setId($id): void {
         $this->id = $id;
     }
 
@@ -117,4 +122,7 @@ class Persona {
         $this->status = $status;
     }
 
+    function setRol($rol): void {
+        $this->rol = $rol;
+    }
 }
