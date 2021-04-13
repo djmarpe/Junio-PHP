@@ -10,7 +10,11 @@
         <title>Home</title>
     </head>
     <body class="background-dark-blue">
-
+        <?php
+        if (isset($_SESSION['mensaje'])) {
+            unset($_SESSION['mensaje']);
+        }
+        ?>
         <div class="row m-3">
             <div class="col-12 bg-white">
                 <h2 class="my-2 text-center">Bienvenido a <i>Matches</i></h2>

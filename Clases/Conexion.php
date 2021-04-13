@@ -89,6 +89,90 @@ class Conexion {
         return $add;
     }
 
+    public static function verificarInicioSesion($email, $passwd) {
+        self::abrirConex();
+        $ok = false;
+
+        //Preparamos la consulta
+        $consulta = 'SELECT * FROM user WHERE email=? AND passwd=?';
+        $stmt = self::$conexion->prepare($consulta);
+        $stmt->bind_param("ss", $val1, $val2);
+        $val1 = $email;
+        $val2 = $passwd;
+        $stmt->execute();
+
+        //Ejecutamos la sentencia
+        if ($resultado = $stmt->get_result()) {
+            if ($row = $resultado->fetch_assoc()) {
+                $ok = true;
+            }
+            mysqli_free_result($resultado);
+        }
+
+        self::cerrarConex();
+        return $ok;
+    }
+
+    public static function getUserLogin($email) {
+        self::abrirConex();
+        $personaAux = null;
+
+        //Preparamos la consulta
+        $consulta = 'SELECT * FROM user WHERE email=?';
+        $stmt = self::$conexion->prepare($consulta);
+        $stmt->bind_param("s", $val1);
+        $val1 = $email;
+        $stmt->execute();
+
+        //Ejecutamos la sentencia
+        if ($resultado = $stmt->get_result()) {
+            if ($row = $resultado->fetch_assoc()) {
+                $personaAux = new Persona();
+                $personaAux->setId($row[id]);
+                $personaAux->setName($row[name]);
+                $personaAux->setSurname($row[surname]);
+                $personaAux->setEmail($row[email]);
+                $personaAux->setPasswd($row[passwd]);
+                $personaAux->setDescription($row[description]);
+                $personaAux->setFecNac($row[fecNac]);
+                $personaAux->setCountry($row[country]);
+                $personaAux->setCity($row[city]);
+                switch ($row[sex]) {
+                    case 1:
+                        $personaAux->setSex('Hombre');
+                        break;
+                    case 2:
+                        $personaAux->setSex('Mujer');
+                        break;
+                }
+                $personaAux->setStatus($row[status]);
+
+                //Preparamos la consulta
+                $consulta = 'SELECT * FROM rolAsignated WHERE idUsuario=?';
+                $stmt = self::$conexion->prepare($consulta);
+                $stmt->bind_param("i", $val1);
+                $val1 = $personaAux->getId();
+                $stmt->execute();
+                if ($resultado = $stmt->get_result()) {
+                    if ($row = $resultado->fetch_assoc()) {
+                        switch ($row[idRol]) {
+                            case 1:
+                                $personaAux->setRol('Administrador');
+                                break;
+                            case 2:
+                                $personaAux->setRol('Usuario');
+                                break;
+                        }
+                    }
+                }
+            }
+            mysqli_free_result($resultado);
+        }
+
+        self::cerrarConex();
+        return $personaAux;
+    }
+    
     public static function getRol($dni) {
         self::abrirConex();
 
