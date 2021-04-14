@@ -1,11 +1,11 @@
 <?php
 
-session_abort();
-session_start();
-
 require_once '../Clases/Persona.php';
 require_once '../Clases/Conexion.php';
+require_once '../Clases/Preferencia.php';
 
+session_abort();
+session_start();
 if (isset($_REQUEST['goToRegister'])) {
     header('Location: ../Vistas/register.php');
     die();
@@ -92,5 +92,57 @@ if (isset($_REQUEST['btn_login'])) {
 }
 
 if (isset($_REQUEST['btn_completarLogin'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+    $preferencia_relacionSeria = $_REQUEST['preferencia_relacionSeria'];
+    $preferencia_deporte = $_REQUEST['preferencia_deporte'];
+    $preferencia_arte = $_REQUEST['preferencia_arte'];
+    $preferencia_politica = $_REQUEST['preferencia_politica'];
+    $preferencia_hijos = $_REQUEST['preferencia_hijos'];
+    $preferencia_interes = $_REQUEST['preferencia_interes'];
+
+    $preferencia1 = new Preferencia();
+    $preferencia1->setIdUsuario($usuarioLogin->getId());
+    $preferencia1->setType('relacion');
+    $preferencia1->setValue($preferencia_relacionSeria);
+    Conexion::addPreferencia($preferencia1);
+
+    $preferencia2 = new Preferencia();
+    $preferencia2->setIdUsuario($usuarioLogin->getId());
+    $preferencia2->setType('deporte');
+    $preferencia2->setValue($preferencia_deporte);
+    Conexion::addPreferencia($preferencia2);
+
+    $preferencia3 = new Preferencia();
+    $preferencia3->setIdUsuario($usuarioLogin->getId());
+    $preferencia3->setType('arte');
+    $preferencia3->setValue($preferencia_arte);
+    Conexion::addPreferencia($preferencia3);
+
+    $preferencia4 = new Preferencia();
+    $preferencia4->setIdUsuario($usuarioLogin->getId());
+    $preferencia4->setType('politica');
+    $preferencia4->setValue($preferencia_politica);
+    Conexion::addPreferencia($preferencia4);
+
+    $preferencia5 = new Preferencia();
+    $preferencia5->setIdUsuario($usuarioLogin->getId());
+    $preferencia5->setType('hijo');
+    $preferencia5->setValue($preferencia_hijos);
+    Conexion::addPreferencia($preferencia5);
+
+    $preferencia6 = new Preferencia();
+    $preferencia6->setIdUsuario($usuarioLogin->getId());
+    $preferencia6->setType('interes');
+    $preferencia6->setValue($preferencia_interes);
+    Conexion::addPreferencia($preferencia6);
+    
+    //Guardamos las preferencias en la session
+    $_SESSION['userLogin_pref1'] = $preferencia1;
+    $_SESSION['userLogin_pref2'] = $preferencia2;
+    $_SESSION['userLogin_pref3'] = $preferencia3;
+    $_SESSION['userLogin_pref4'] = $preferencia4;
+    $_SESSION['userLogin_pref5'] = $preferencia5;
+    $_SESSION['userLogin_pref6'] = $preferencia6;
+    
     
 }

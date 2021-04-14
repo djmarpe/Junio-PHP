@@ -15,31 +15,34 @@
                         <h2 class="col-12 my-2 text-center">Seleccionar preferencias</h2>
                         <div class="my-3 col-12 col-md-5 text-center">
                             <small class="d-block">-> ¿Relación seria? <-</small>
-                            <input id="rel_si" type="radio" name="preferencia_relacionSeria" selected>
+                            <input id="rel_si" type="radio" name="preferencia_relacionSeria" value="si" selected>
                             <label for="rel_si">Si</label>
-                            <input id="rel_no" type="radio" name="preferencia_relacionSeria">
+                            <input id="rel_no" type="radio" name="preferencia_relacionSeria" value=""no>
                             <label for="rel_no">No</label>
                         </div>
                         <div class="my-3 col-12 col-md-5 text-center">
                             <small class="d-block">-> Fanatismo por el deporte <-</small>
+                            <input id="deporte_hidden" type="hidden" name="preferencia_deporte" value="5">
                             <small id="deporte_value" name="preferencia_deporte">5</small>
                             <input id="range_deporte" type="range" min="0" max="10" step="1" onchange="rangeDeporte()">
                         </div>
                         <div class="my-3 col-12 col-md-5 text-center">
                             <small class="d-block">-> Fanatismo por el arte <-</small>
+                            <input id="arte_hidden" type="hidden" name="preferencia_arte" value="5">
                             <small id="arte_value" name="preferencia_arte">5</small>
                             <input id="range_arte" type="range" min="0" max="10" step="1" onchange="rangeArte()">
                         </div>
                         <div class="my-3 col-12 col-md-5 text-center">
                             <small class="d-block">-> Intereses políticos <-</small>
+                            <input id="politica_hidden" type="hidden" name="preferencia_politica" value="5">
                             <small id="politica_value" name="preferencia_politica">5</small>
                             <input id="range_politica" type="range" min="0" max="10" step="1" onchange="rangePolitica()">
                         </div>
                         <div class="my-3 col-12 col-md-5 text-center">
                             <small class="d-block">-> ¿Quieres tener hijos? <-</small>
-                            <input id="hijos_si" type="radio" name="preferencia_hijos">
+                            <input id="hijos_si" type="radio" value="si" name="preferencia_hijos">
                             <label for="hijos_si">Si</label>
-                            <input id="hijos_no" type="radio" name="preferencia_hijos">
+                            <input id="hijos_no" type="radio" value="no" name="preferencia_hijos">
                             <label for="hijos_no">No</label>
                         </div>
                         <div class="my-3 col-12 col-md-5 text-center">

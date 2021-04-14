@@ -15,7 +15,6 @@ class Preferencia {
     private $id;
     private $idUsuario;
     private $type;
-    private $description;
     private $value;
 
     function __construct() {
@@ -33,9 +32,6 @@ class Preferencia {
         return $this->type;
     }
 
-    function getDescription() {
-        return $this->description;
-    }
 
     function getValue() {
         return $this->value;
@@ -51,10 +47,6 @@ class Preferencia {
 
     function setType($type): void {
         $this->type = $type;
-    }
-
-    function setDescription($description): void {
-        $this->description = $description;
     }
 
     function setValue($value): void {

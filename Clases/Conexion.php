@@ -1,6 +1,7 @@
 <?php
 
 include_once 'Persona.php';
+include_once 'Preferencia.php';
 
 class Conexion {
 
@@ -174,7 +175,23 @@ class Conexion {
         self::cerrarConex();
         return $personaAux;
     }
-    
+
+    public static function addPreferencia($preferencia) {
+        self::abrirConex();
+        $ok = false;
+
+        $sentencia1 = "INSERT INTO preferences VALUES(null," . $preferencia->getIdUsuario() . ",'" . $preferencia->getType() . "','" . $preferencia->getValue() . "')";
+
+        if (mysqli_query(self::$conexion, $sentencia1)) {
+            $sentencia2 = "UPDATE user SET status = 2 WHERE id = " . $preferencia->getIdUsuario();
+            if (mysqli_query(self::$conexion, $sentencia2)) {
+                $ok = true;
+            }
+        }
+
+        self::cerrarConex();
+    }
+
     public static function getRol($dni) {
         self::abrirConex();
 
