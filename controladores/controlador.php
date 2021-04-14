@@ -68,26 +68,29 @@ if (isset($_REQUEST['btn_login'])) {
                     //Redirigir a Admin
                     break;
                 case 'Usuario':
-                    //Redirigir a usuario
+                    //Comprobamos el estado del usuario
                     switch ($personaAux->getStatus()) {
                         case 1:
+                            //Si es 1 (Primera vez que entra) vamos a seleccionar las preferencias.
                             header('Location: ../Vistas/preferenciasUsuario.php');
                             break;
                         case 2:
+                            //Si ya está 100% funcional, vamos a su panel principal
                             header('Location: ../Vistas/panelPrincipalUsuario.php');
                             break;
                     }
-
                     break;
             }
-        }else{
+        } else {
             $_SESSION['mensaje'] = 'Usuario y/o contraseña incorrectos';
             header('Location: ../Vistas/login.php');
         }
-    }else{
+    } else {
         $_SESSION['mensaje'] = 'No se encuentra el usuario';
         header('Location: ../Vistas/login.php');
     }
+}
 
-    die();
+if (isset($_REQUEST['btn_completarLogin'])) {
+    
 }

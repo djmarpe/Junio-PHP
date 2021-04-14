@@ -1,6 +1,6 @@
 <?php
 
-include_once './Persona.php';
+include_once 'Persona.php';
 
 class Conexion {
 
@@ -104,7 +104,9 @@ class Conexion {
         //Ejecutamos la sentencia
         if ($resultado = $stmt->get_result()) {
             if ($row = $resultado->fetch_assoc()) {
-                $ok = true;
+                if ($email == $row[email] && $passwd == $row[passwd]) {
+                    $ok = true;
+                }
             }
             mysqli_free_result($resultado);
         }
@@ -126,18 +128,18 @@ class Conexion {
 
         //Ejecutamos la sentencia
         if ($resultado = $stmt->get_result()) {
-            if ($row = $resultado->fetch_assoc()) {
+            if ($row = mysqli_fetch_array($resultado)) {
                 $personaAux = new Persona();
-                $personaAux->setId($row[id]);
-                $personaAux->setName($row[name]);
-                $personaAux->setSurname($row[surname]);
-                $personaAux->setEmail($row[email]);
-                $personaAux->setPasswd($row[passwd]);
-                $personaAux->setDescription($row[description]);
-                $personaAux->setFecNac($row[fecNac]);
-                $personaAux->setCountry($row[country]);
-                $personaAux->setCity($row[city]);
-                switch ($row[sex]) {
+                $personaAux->setId($row[0]);
+                $personaAux->setName($row[1]);
+                $personaAux->setSurname($row[2]);
+                $personaAux->setEmail($row[3]);
+                $personaAux->setPasswd($row[4]);
+                $personaAux->setDescription($row[5]);
+                $personaAux->setFecNac($row[6]);
+                $personaAux->setCountry($row[7]);
+                $personaAux->setCity($row[8]);
+                switch ($row[9]) {
                     case 1:
                         $personaAux->setSex('Hombre');
                         break;
@@ -145,7 +147,7 @@ class Conexion {
                         $personaAux->setSex('Mujer');
                         break;
                 }
-                $personaAux->setStatus($row[status]);
+                $personaAux->setStatus($row[10]);
 
                 //Preparamos la consulta
                 $consulta = 'SELECT * FROM rolAsignated WHERE idUsuario=?';
@@ -154,8 +156,8 @@ class Conexion {
                 $val1 = $personaAux->getId();
                 $stmt->execute();
                 if ($resultado = $stmt->get_result()) {
-                    if ($row = $resultado->fetch_assoc()) {
-                        switch ($row[idRol]) {
+                    if ($row = mysqli_fetch_array($resultado)) {
+                        switch ($row[1]) {
                             case 1:
                                 $personaAux->setRol('Administrador');
                                 break;
