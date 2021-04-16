@@ -54,6 +54,7 @@
                             </select>
                         </div>
                         <div class="col-12 text-center">
+                            <a href="../controladores/controlador.php?cerrarSesion=cerrarSesion" class="btn btn-outline-primary w-25 mx-2">Página principal</a>
                             <input type="submit" name="btn_completarLogin" value="Terminar" class="btn btn-primary w-25 mx-2">
                         </div>
                     </div>

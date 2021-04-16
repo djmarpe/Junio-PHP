@@ -78,7 +78,7 @@ class Persona {
         return $this->rol;
     }
 
-        function setId($id): void {
+    function setId($id): void {
         $this->id = $id;
     }
 
@@ -125,4 +125,5 @@ class Persona {
     function setRol($rol): void {
         $this->rol = $rol;
     }
+
 }
