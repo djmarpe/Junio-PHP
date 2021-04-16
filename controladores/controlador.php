@@ -62,6 +62,9 @@ if (isset($_REQUEST['btn_login'])) {
     if (Conexion::existeUsuario($email)) {
         if (Conexion::verificarInicioSesion($email, $passwd)) {
             $personaAux = Conexion::getUserLogin($email);
+            Conexion::estadoOnline($personaAux->getId());
+            $usuariosOnline = Conexion::getUsersOnline();
+            $_SESSION['usuariosOnline'] = $usuariosOnline;
             $_SESSION['usuarioLogin'] = $personaAux;
             switch ($personaAux->getRol()) {
                 case 'Administrador':
@@ -75,7 +78,10 @@ if (isset($_REQUEST['btn_login'])) {
                             header('Location: ../Vistas/preferenciasUsuario.php');
                             break;
                         case 2:
-                            //Si ya está 100% funcional, vamos a su panel principal
+                            $listaAmigos = Conexion::getAmigos($personaAux->getId());
+                            $userLogin_preferencias = Conexion::getPreferencias($personaAux->getId());
+                            $_SESSION['userLogin_preferencias'] = $userLogin_preferencias;
+                            $_SESSION['listaAmigos'] = $listaAmigos;
                             header('Location: ../Vistas/panelPrincipalUsuario.php');
                             break;
                     }
@@ -92,6 +98,7 @@ if (isset($_REQUEST['btn_login'])) {
 }
 
 if (isset($_REQUEST['btn_completarLogin'])) {
+    $userLogin_preferencias = [];
     $usuarioLogin = $_SESSION['usuarioLogin'];
     $preferencia_relacionSeria = $_REQUEST['preferencia_relacionSeria'];
     $preferencia_deporte = $_REQUEST['preferencia_deporte'];
@@ -135,14 +142,40 @@ if (isset($_REQUEST['btn_completarLogin'])) {
     $preferencia6->setType('interes');
     $preferencia6->setValue($preferencia_interes);
     Conexion::addPreferencia($preferencia6);
-    
+
     //Guardamos las preferencias en la session
-    $_SESSION['userLogin_pref1'] = $preferencia1;
-    $_SESSION['userLogin_pref2'] = $preferencia2;
-    $_SESSION['userLogin_pref3'] = $preferencia3;
-    $_SESSION['userLogin_pref4'] = $preferencia4;
-    $_SESSION['userLogin_pref5'] = $preferencia5;
-    $_SESSION['userLogin_pref6'] = $preferencia6;
-    
-    
+    $userLogin_preferencias[] = $preferencia1;
+    $userLogin_preferencias[] = $preferencia2;
+    $userLogin_preferencias[] = $preferencia3;
+    $userLogin_preferencias[] = $preferencia4;
+    $userLogin_preferencias[] = $preferencia5;
+    $userLogin_preferencias[] = $preferencia6;
+
+    $_SESSION['userLogin_preferencias'] = $userLogin_preferencias;
+    $listaAmigos = Conexion::getAmigos($usuarioLogin->getId());
+    $_SESSION['listaAmigos'] = $listaAmigos;
+    $usuariosOnline = Conexion::getUsersOnline();
+    $_SESSION['usuariosOnline'] = $usuariosOnline;
+    header('Location: ../Vistas/panelPrincipalUsuario.php');
+}
+
+if (isset($_REQUEST['cerrarSesion'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+    Conexion::estadoOffline($usuarioLogin->getId());
+    if (isset($_SESSION['mensaje'])) {
+        unset($_SESSION['mensaje']);
+    }
+    if(isset($_usuarioLogin)){
+        unset($_SESSION['usuarioLogin']);
+    }
+    if (isset($_SESSION['userLogin_preferencias'])) {
+        unset($_SESSION['userLogin_preferencias']);
+    }
+    if (isset($_SESSION['listaAmigos'])){
+        unset($_SESSION['listaAmigos']);
+    }
+    if (isset($_SESSION['usuariosOnline'])) {
+        unset($_SESSION['usuariosOnline']);
+    }
+    header('Location: ../index.php');
 }
