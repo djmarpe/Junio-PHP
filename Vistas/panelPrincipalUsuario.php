@@ -19,6 +19,7 @@ and open the template in the editor.
         $usuarioLogin = $_SESSION['usuarioLogin'];
         $listaAmigos = [];
         $listaMensajes = [];
+        $listaMensajes[] = 1;
         $usuariosOnline = 0;
         if (isset($_SESSION['listaAmigos'])) {
             $listaAmigos = $_SESSION['listaAmigos'];
@@ -37,7 +38,7 @@ and open the template in the editor.
                         <small class="text-muted float-start align-self-center">Conectado como: <?= $usuarioLogin->getName() . ' ' . $usuarioLogin->getSurname() ?></small>
                     </div>
                     <div class="col-6 bg-white">
-                        <a href="../controladores/controlador.php?cerrarSesion=cerrarSesion" class="btn btn-outline-primary float-end">Cerrar sesión</a>
+                        <a href="../controladores/controlador.php?cerrarSesion=cerrarSesion" class="btn btn-primary float-end">Cerrar sesión</a>
                     </div>
                 </div>
             </div>
@@ -56,10 +57,10 @@ and open the template in the editor.
         <div class="row m-3">
             <div class="col-12 bg-white">
                 <div class="row m-0 justify-content-between">
-                    <div class="col-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
+                    <div class="col-12 col-md-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
                         <p>Mi perfil</p>
                     </div>
-                    <div class="col-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
+                    <div class="col-12 col-md-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
                         <h5 class="m-0 py-1">Mis amigos</h5>
                         <small class="d-block">Hay un total de <span class="text-success"><?= $usuariosOnline ?></span> usuarios conectados en la red.</small>
                         <?php
@@ -70,15 +71,17 @@ and open the template in the editor.
                         } else {
                             ?>
                             <small class="d-block">Amigos agregados: <span class="text-success"><?= sizeof($listaAmigos) ?></span></small>
-                            <a href="../controladores/controlador.php?verAmigos=verAmigos" class="btn btn-primary mt-4">Ver mis amigos</a>
+                            <a href="../controladores/controlador.php?verAmigos=verAmigos" class="btn btn-outline-primary mt-4">Ver mis amigos</a>
                             <?php
                         }
                         ?>
                     </div>
-                    <div class="col-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
-                        <p>Buscar gente</p>
+                    <div class="col-12 col-md-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
+                        <h5 class="m-0 py-1">Conozca a gente nueva</h5>
+                        <small class="d-block">Con un simple click, podrá ver un listado de gente según el nivel de afinidad más similar al suyo.</small>
+                        <a href="../controladores/controlador.php?verGenteCercana=verGenteCercana" class="btn btn-outline-primary mt-4">Buscar gente</a>
                     </div>
-                    <div class="col-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
+                    <div class="col-12 col-md-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
                         <h5 class="m-0 py-1">Bandeja de entrada</h5>
                         <?php
                         if (sizeof($listaMensajes) == 0) {
@@ -87,7 +90,8 @@ and open the template in the editor.
                             <?php
                         } else {
                             ?>
-                            <small>Tienes <span class="text-success"><?= sizeof($listaMensajes) ?></span> mensajes pendientes sin leer</small>
+                            <small class="d-block">Tienes <span class="text-success"><?= sizeof($listaMensajes) ?></span> mensajes pendientes sin leer</small>
+                            <a href="../controladores/controlador.php?verMisMensajes=verMisMensajes" class="btn btn-outline-primary mt-4">Ver mensajes</a>
                             <?php
                         }
                         ?>

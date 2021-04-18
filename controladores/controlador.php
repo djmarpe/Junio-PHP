@@ -179,3 +179,13 @@ if (isset($_REQUEST['cerrarSesion'])) {
     }
     header('Location: ../index.php');
 }
+
+if (isset($_REQUEST['verGenteCercana'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+    
+    //Obtenemos las preferencias del usuario que ha iniciado sesión
+    
+    $preferencias_usuarioLogin = $_SESSION['userLogin_preferencias'];
+    
+    Conexion::getGenteCercana($preferencias_usuarioLogin);
+}

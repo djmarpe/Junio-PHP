@@ -2,6 +2,7 @@
 
 include_once 'Persona.php';
 include_once 'Preferencia.php';
+include_once 'UsuarioPreferencias.php';
 
 class Conexion {
 
@@ -247,7 +248,7 @@ class Conexion {
 
         self::cerrarConex();
     }
-    
+
     public static function estadoOffline($idUsuario) {
         self::abrirConex();
 
@@ -294,6 +295,48 @@ class Conexion {
 
         self::cerrarConex();
         return $listaPreferencias;
+    }
+
+    public static function getGenteCercana($preferencias_usuarioLogin) {
+        self::abrirConex();
+        
+        $usuariosCandidatos = [];
+
+        $preferencia1 = $preferencias_usuarioLogin[0]; // si/no
+        $preferencia2 = $preferencias_usuarioLogin[1];
+        $preferencia3 = $preferencias_usuarioLogin[2];
+        $preferencia4 = $preferencias_usuarioLogin[3];
+        $preferencia5 = $preferencias_usuarioLogin[4]; // si/no
+        $preferencia6 = $preferencias_usuarioLogin[5]; // hombres/mujeres/ambos
+        $sentencia1 = "";
+
+        switch ($preferencia6->getValue()) {
+            case 'Hombres':
+                $sentencia1 = "SELECT DISTINCT(idUsuario) FROM preferences WHERE (tipo = 'relacion' or tipo = 'hijo' or tipo = 'interes') AND (value = '" . $preferencia1->getValue() . "' or value='Mujeres')";
+                break;
+            case 'Mujeres':
+                $sentencia1 = "SELECT DISTINCT(idUsuario) FROM preferences WHERE (tipo = 'relacion' or tipo = 'hijo' or tipo = 'interes') AND (value = '" . $preferencia1->getValue() . "' or value='Hombres')";
+                break;
+            case 'Ambos':
+                $sentencia1 = "SELECT DISTINCT(idUsuario) FROM preferences WHERE (tipo = 'relacion' or tipo = 'hijo' or tipo = 'interes') AND (value = '" . $preferencia1->getValue() . "' or value='Ambos')";
+                break;
+        }
+
+        if ($resultado1 = mysqli_query(self::$conexion, $sentencia1)) {
+            while ($row = mysqli_fetch_array($resultado1)) {
+                $usuarioCandidatoAux = new UsuarioPreferencias();
+                $idUsuarioCandidato = $row[0];
+                $sentencia2 = "Select * from user Where id = " . $idUsuarioCandidato;
+                if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
+                    if ($row2  = mysqli_fetch_array($resultado2)) {
+                        $usuarioCandidatoAux->setIdUsuario($row2[0]);
+                    }
+                }
+                
+            }
+        }
+
+        self::cerrarConex();
     }
 
 }
