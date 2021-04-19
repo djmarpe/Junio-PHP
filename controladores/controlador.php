@@ -68,8 +68,23 @@ if (isset($_REQUEST['btn_login'])) {
             $_SESSION['usuarioLogin'] = $personaAux;
             switch ($personaAux->getRol()) {
                 case 'Administrador':
-                    //Redirigir a Admin
+                    switch ($personaAux->getStatus()) {
+                        case 1:
+                            //Si es 1 (Primera vez que entra) vamos a seleccionar las preferencias.
+                            header('Location: ../Vistas/preferenciasUsuario.php');
+                            break;
+                        case 2:
+                            $listaUsuariosTotal = Conexion::getUsuariosRegistrados($personaAux->getId());
+                            $listaAmigos = Conexion::getAmigos($personaAux->getId());
+                            $userLogin_preferencias = Conexion::getPreferencias($personaAux->getId());
+                            $_SESSION['userLogin_preferencias'] = $userLogin_preferencias;
+                            $_SESSION['listaAmigos'] = $listaAmigos;
+                            $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
+                            header('Location: ../Vistas/panelPrincipalAdministrador.php');
+                            break;
+                    }
                     break;
+
                 case 'Usuario':
                     //Comprobamos el estado del usuario
                     switch ($personaAux->getStatus()) {
@@ -156,7 +171,14 @@ if (isset($_REQUEST['btn_completarLogin'])) {
     $_SESSION['listaAmigos'] = $listaAmigos;
     $usuariosOnline = Conexion::getUsersOnline();
     $_SESSION['usuariosOnline'] = $usuariosOnline;
-    header('Location: ../Vistas/panelPrincipalUsuario.php');
+    switch ($usuarioLogin->getRol()) {
+        case 'Usuario':
+            header('Location: ../Vistas/panelPrincipalUsuario.php');
+            break;
+        case 'Administrador':
+            header('Location: ../Vistas/panelPrincipalAdministrador.php');
+            break;
+    }
 }
 
 if (isset($_REQUEST['cerrarSesion'])) {
@@ -165,13 +187,13 @@ if (isset($_REQUEST['cerrarSesion'])) {
     if (isset($_SESSION['mensaje'])) {
         unset($_SESSION['mensaje']);
     }
-    if(isset($_usuarioLogin)){
+    if (isset($_usuarioLogin)) {
         unset($_SESSION['usuarioLogin']);
     }
     if (isset($_SESSION['userLogin_preferencias'])) {
         unset($_SESSION['userLogin_preferencias']);
     }
-    if (isset($_SESSION['listaAmigos'])){
+    if (isset($_SESSION['listaAmigos'])) {
         unset($_SESSION['listaAmigos']);
     }
     if (isset($_SESSION['usuariosOnline'])) {
@@ -182,10 +204,103 @@ if (isset($_REQUEST['cerrarSesion'])) {
 
 if (isset($_REQUEST['verGenteCercana'])) {
     $usuarioLogin = $_SESSION['usuarioLogin'];
-    
+
     //Obtenemos las preferencias del usuario que ha iniciado sesión
-    
+
     $preferencias_usuarioLogin = $_SESSION['userLogin_preferencias'];
-    
+
     Conexion::getGenteCercana($preferencias_usuarioLogin);
+}
+
+if (isset($_REQUEST['administrarUsuarios'])) {
+    header('Location: ../Vistas/administradorUsuarios.php');
+}
+
+if (isset($_REQUEST['dashboardAdmin'])) {
+    $personaAux = $_SESSION['usuarioLogin'];
+    $listaUsuariosTotal = Conexion::getUsuariosRegistrados($personaAux->getId());
+    $listaAmigos = Conexion::getAmigos($personaAux->getId());
+    $userLogin_preferencias = Conexion::getPreferencias($personaAux->getId());
+    $_SESSION['userLogin_preferencias'] = $userLogin_preferencias;
+    $_SESSION['listaAmigos'] = $listaAmigos;
+    $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
+    header('Location: ../Vistas/panelPrincipalAdministrador.php');
+}
+
+if (isset($_REQUEST['admin_newUser'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+
+    $personaAux = new Persona();
+    $personaAux->setName($_REQUEST['user_newName']);
+    $personaAux->setSurname($_REQUEST['user_newSurname']);
+    $personaAux->setEmail($_REQUEST['user_newEmail']);
+    $personaAux->setPasswd(['user_newPasswd']);
+    $personaAux->setFecNac($_REQUEST['user_newFecNac']);
+    $personaAux->setCountry($_REQUEST['user_newCountry']);
+    $personaAux->setCity($_REQUEST['user_newCity']);
+    $personaAux->setDescription($_REQUEST['user_newDescription']);
+    switch ($_REQUEST['user_newSex']) {
+        case 'Hombre':
+            $personaAux->setSex(1);
+            break;
+        case 'Mujer':
+            $personaAux->setSex(2);
+            break;
+    }
+    switch ($_REQUEST['user_newRol']) {
+        case 'Administrador':
+            $personaAux->setRol(1);
+            break;
+        case 'Usuario':
+            $personaAux->setRol(2);
+            break;
+    }
+
+    if (!Conexion::existeUsuario($personaAux->getEmail())) {
+        if (Conexion::addUserAdmin($personaAux)) {
+            $listaUsuariosTotal = Conexion::getUsuariosRegistrados($usuarioLogin->getId());
+            $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
+            header('Location: ../Vistas/administradorUsuarios.php');
+        }
+    } else {
+        $_SESSION['mensaje'] = 'Error, no se puede añadir al usuario';
+        $listaUsuariosTotal = Conexion::getUsuariosRegistrados($usuarioLogin->getId());
+        $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
+        header('Location: ../Vistas/administradorUsuarios.php');
+    }
+}
+
+if (isset($_REQUEST['admin_delUser'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+    $idUsuario = $_REQUEST['persona_idUsuario'];
+
+    if (Conexion::deleteUser($idUsuario)) {
+        $listaUsuariosTotal = Conexion::getUsuariosRegistrados($usuarioLogin->getId());
+        $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
+        header('Location: ../Vistas/administradorUsuarios.php');
+    }
+}
+
+if (isset($_REQUEST['admin_editUser'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+    $persona  = new Persona();
+    $persona->setId($_REQUEST['persona_idUsuario']);
+    $persona->setName($_REQUEST['persona_name']);
+    $persona->setSurname($_REQUEST['persona_surname']);
+    $persona->setEmail($_REQUEST['persona_email']);
+    $persona->setPasswd($_REQUEST['persona_passwd']);
+    switch ($_REQUEST['persona_rol']){
+        case 'Administrador':
+            $persona->setRol(1);
+            break;
+        case 'Usuario':
+            $persona->setRol(2);
+            break;
+    }
+    
+    if (Conexion::editUser($persona)) {
+        $listaUsuariosTotal = Conexion::getUsuariosRegistrados($usuarioLogin->getId());
+        $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
+        header('Location: ../Vistas/administradorUsuarios.php');
+    }
 }
