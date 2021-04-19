@@ -24,19 +24,19 @@
                             <small class="d-block">-> Fanatismo por el deporte <-</small>
                             <input id="deporte_hidden" type="hidden" name="preferencia_deporte" value="5">
                             <small id="deporte_value" name="preferencia_deporte">5</small>
-                            <input id="range_deporte" type="range" min="0" max="10" step="1" onchange="rangeDeporte()">
+                            <input id="range_deporte" type="range" min="0" max="10" step="1" oninput="rangeDeporte()">
                         </div>
                         <div class="my-3 col-12 col-md-5 text-center">
                             <small class="d-block">-> Fanatismo por el arte <-</small>
                             <input id="arte_hidden" type="hidden" name="preferencia_arte" value="5">
                             <small id="arte_value" name="preferencia_arte">5</small>
-                            <input id="range_arte" type="range" min="0" max="10" step="1" onchange="rangeArte()">
+                            <input id="range_arte" type="range" min="0" max="10" step="1" oninput="rangeArte()">
                         </div>
                         <div class="my-3 col-12 col-md-5 text-center">
                             <small class="d-block">-> Intereses políticos <-</small>
                             <input id="politica_hidden" type="hidden" name="preferencia_politica" value="5">
                             <small id="politica_value" name="preferencia_politica">5</small>
-                            <input id="range_politica" type="range" min="0" max="10" step="1" onchange="rangePolitica()">
+                            <input id="range_politica" type="range" min="0" max="10" step="1" oninput="rangePolitica()">
                         </div>
                         <div class="my-3 col-12 col-md-5 text-center">
                             <small class="d-block">-> ¿Quieres tener hijos? <-</small>

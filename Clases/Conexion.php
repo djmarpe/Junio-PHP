@@ -91,6 +91,55 @@ class Conexion {
         return $add;
     }
 
+    public static function addUserAdmin($personaAux) {
+        //Abrimos conexion
+        self::abrirConex();
+
+        $add = false;
+        $val9 = 0;
+
+        $val1 = $personaAux->getName();
+        $val2 = $personaAux->getSurname();
+        $val3 = $personaAux->getEmail();
+        $val4 = $personaAux->getPasswd();
+        $val5 = $personaAux->getDescription();
+        $val6 = $personaAux->getFecNac();
+        $val7 = $personaAux->getCountry();
+        $val8 = $personaAux->getCity();
+        $val9 = $personaAux->getSex();
+        $sentencia1 = "INSERT INTO user VALUES(null,'" . $val1 . "','" . $val2 . "','" . $val3 . "','" . $val4 . "','" . $val5 . "','" . $val6 . "','" . $val7 . "','" . $val8 . "'," . $val9 . ",1,0)";
+
+        //Insertamos el usuario
+        if (mysqli_query(self::$conexion, $sentencia1)) {
+            //Si conseguimos añadirlo en la tabla usuario, obtenemos el id del usuario
+            $sentencia2 = "SELECT id FROM user WHERE email = '" . $val3 . "'";
+            if ($resultado = mysqli_query(self::$conexion, $sentencia2)) {
+                if ($row = mysqli_fetch_array($resultado)) {
+                    //Insertamos en la tabla rolAsignated
+                    switch ($personaAux->getRol()) {
+                        case 1:
+                            $sentencia3 = "INSERT INTO rolAsignated VALUES(" . $row[0] . ",1)";
+                            if (mysqli_query(self::$conexion, $sentencia3)) {
+                                //Ponemos add a true =  usuario añadido.
+                                $add = true;
+                            }
+                            break;
+                        case 2:
+                            $sentencia3 = "INSERT INTO rolAsignated VALUES(" . $row[0] . ",2)";
+                            if (mysqli_query(self::$conexion, $sentencia3)) {
+                                //Ponemos add a true =  usuario añadido.
+                                $add = true;
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+        self::cerrarConex();
+
+        return $add;
+    }
+
     public static function verificarInicioSesion($email, $passwd) {
         self::abrirConex();
         $ok = false;
@@ -297,9 +346,64 @@ class Conexion {
         return $listaPreferencias;
     }
 
+    public static function getUsuariosRegistrados($idUsuarioLogin) {
+        self::abrirConex();
+
+        $listaUsuarios = [];
+
+        $sentencia = "SELECT * FROM user WHERE id <> ?";
+
+        $stmt = self::$conexion->prepare($sentencia);
+        $stmt->bind_param("i", $val1);
+        $val1 = $idUsuarioLogin;
+        $stmt->execute();
+        if ($resultado1 = $stmt->get_result()) {
+            while ($row = mysqli_fetch_array($resultado1)) {
+                $personaAux = new Persona();
+                $personaAux->setId($row[0]);
+                $personaAux->setName($row[1]);
+                $personaAux->setSurname($row[2]);
+                $personaAux->setEmail($row[3]);
+                $personaAux->setPasswd($row[4]);
+                $personaAux->setDescription($row[5]);
+                $personaAux->setFecNac($row[6]);
+                $personaAux->setCountry($row[7]);
+                $personaAux->setCity($row[8]);
+                switch ($row[9]) {
+                    case 1:
+                        $personaAux->setSex('Hombre');
+                        break;
+                    case 2:
+                        $personaAux->setSex('Mujer');
+                        break;
+                }
+                $personaAux->setStatus($row[10]);
+
+                $sentencia2 = "SELECT idRol FROM rolAsignated WHERE idUsuario = " . $personaAux->getId();
+
+                if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
+                    if ($row2 = mysqli_fetch_array($resultado2)) {
+                        switch ($row2[0]) {
+                            case 1:
+                                $personaAux->setRol('Administrador');
+                                break;
+                            case 2:
+                                $personaAux->setRol('Usuario');
+                                break;
+                        }
+                        $listaUsuarios[] = $personaAux;
+                    }
+                }
+            }
+        }
+
+        self::cerrarConex();
+        return $listaUsuarios;
+    }
+
     public static function getGenteCercana($preferencias_usuarioLogin) {
         self::abrirConex();
-        
+
         $usuariosCandidatos = [];
 
         $preferencia1 = $preferencias_usuarioLogin[0]; // si/no
@@ -328,15 +432,57 @@ class Conexion {
                 $idUsuarioCandidato = $row[0];
                 $sentencia2 = "Select * from user Where id = " . $idUsuarioCandidato;
                 if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
-                    if ($row2  = mysqli_fetch_array($resultado2)) {
+                    if ($row2 = mysqli_fetch_array($resultado2)) {
                         $usuarioCandidatoAux->setIdUsuario($row2[0]);
                     }
                 }
-                
             }
         }
 
         self::cerrarConex();
+    }
+
+    public static function deleteUser($idUsuario) {
+        self::abrirConex();
+        $del = false;
+
+        $sentencia1 = "DELETE FROM user WHERE id = " . $idUsuario;
+
+        if ($resultado1 = mysqli_query(self::$conexion, $sentencia1)) {
+            $sentencia2 = "DELETE FROM rolAsignated WHERE idUsuario = " . $idUsuario;
+            if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
+                $del = true;
+            }
+        }
+
+        self::cerrarConex();
+        return $del;
+    }
+
+    public static function editUser($persona) {
+        self::abrirConex();
+        $ok = true;
+
+        if ($persona->getPasswd() == '') {
+            $sentencia1 = "Update user SET name = '" . $persona->getName() . "', surname = '" . $persona->getSurname() . "', email = '" . $persona->getEmail() . "' WHERE id = " . $persona->getId();
+            if (mysqli_query(self::$conexion, $sentencia1)) {
+                $sentencia2 = "Update rolAsignated SET idRol = " . $persona->getRol() . " WHERE idUsuario = " . $persona->getId();
+                if (mysqli_query(self::$conexion, $sentencia2)) {
+                    $ok = true;
+                }
+            }
+        } else {
+            $sentencia1 = "Update user SET name = '" . $persona->getName() . "', surname = '" . $persona->getSurname() . "', email = '" . $persona->getEmail() . "', passwd = '" . $persona->getPasswd() . "' WHERE id = " . $persona->getId();
+            if (mysqli_query(self::$conexion, $sentencia1)) {
+                $sentencia2 = "Update rolAsignated SET idRol = " . $persona->getRol() . " WHERE idUsuario = " . $persona->getId();
+                if (mysqli_query(self::$conexion, $sentencia2)) {
+                    $ok = true;
+                }
+            }
+        }
+
+        self::cerrarConex();
+        return $ok;
     }
 
 }
