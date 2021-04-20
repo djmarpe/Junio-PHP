@@ -203,13 +203,86 @@ if (isset($_REQUEST['cerrarSesion'])) {
 }
 
 if (isset($_REQUEST['verGenteCercana'])) {
+    $usuariosCandidatos = [];
+
     $usuarioLogin = $_SESSION['usuarioLogin'];
 
-    //Obtenemos las preferencias del usuario que ha iniciado sesión
+    //Obtenemos los datos del usuario login (usuario clave)
+    $usuarioLoginPreferencias = new UsuarioPreferencias();
+    $usuarioLoginPreferencias->setIdUsuario($usuarioLogin->getId());
+    $usuarioLoginPreferencias->setNombreUsuario($usuarioLogin->getName());
+    $usuarioLoginPreferencias->setApellidosUsuario($usuarioLogin->getSurname());
+    $usuarioLoginPreferencias->setFechaNacimientoUsuario($usuarioLogin->getFecNac());
+    $usuarioLoginPreferencias->setDescripcion($usuarioLogin->getDescription());
+    $usuarioLoginPreferencias->setEmail($usuarioLogin->getEmail());
+    $usuarioLoginPreferencias->setPais($usuarioLogin->getCountry());
+    $usuarioLoginPreferencias->setLocalidad($usuarioLogin->getCity());
+    $usuarioLoginPreferencias->setSexo($usuarioLogin->getSex());
+    //Obtenemos las preferencias del usuario
+    $usuarioLoginPreferencias->setPreferencias(Conexion::getUsuarioLoginPreferencias($usuarioLogin->getId()));
+    $preferenciasUsuarioLogin = $usuarioLoginPreferencias->getPreferencias();
 
-    $preferencias_usuarioLogin = $_SESSION['userLogin_preferencias'];
+    $_SESSION['usuarioPrincipal'] = $usuarioLoginPreferencias;
 
-    Conexion::getGenteCercana($preferencias_usuarioLogin);
+    $listaTotalUsuarios = Conexion::getUsuariosTotal($usuarioLogin->getId());
+
+    for ($i = 0; $i < sizeof($listaTotalUsuarios); $i++) {
+        $usuarioAux = $listaTotalUsuarios[$i];
+        $preferenciasUsuarioAux = $usuarioAux->getPreferencias();
+        $posible = 0; //Este el contador que va a decir si es un posible candidato o no
+        $claves = 0; //Este es el contador que va a marcar si los introduce o no
+        for ($k = 0; $k < sizeof($preferenciasUsuarioAux); $k++) {
+            $preferenciaLogin = $preferenciasUsuarioLogin[$k];
+            $preferenciaAux = $preferenciasUsuarioAux[$k];
+            switch ($preferenciaAux->getType()) {
+                case 'relacion':
+                    if ($preferenciaAux->getValue() == $preferenciaLogin->getValue()) {
+                        $claves++;
+                    }
+                    break;
+                case 'deporte':
+                    if ($preferenciaAux->getValue() + 1 == $preferenciaLogin->getValue() || $preferenciaAux->getValue() - 1 == $preferenciaLogin->getValue() || $preferenciaAux->getValue() == $preferenciaLogin->getValue()) {
+                        $posible++;
+                    }
+                    break;
+                case 'arte':
+                    if ($preferenciaAux->getValue() + 1 == $preferenciaLogin->getValue() || $preferenciaAux->getValue() - 1 == $preferenciaLogin->getValue() || $preferenciaAux->getValue() == $preferenciaLogin->getValue()) {
+                        $posible++;
+                    }
+                    break;
+                case 'politica':
+                    if ($preferenciaAux->getValue() + 1 == $preferenciaLogin->getValue() || $preferenciaAux->getValue() - 1 == $preferenciaLogin->getValue() || $preferenciaAux->getValue() == $preferenciaLogin->getValue()) {
+                        $posible++;
+                    }
+                    break;
+                case 'hijo':
+                    if ($preferenciaAux->getValue() == $preferenciaLogin->getValue()) {
+                        $claves++;
+                    }
+                    break;
+                case 'interes':
+                    if ($preferenciaLogin->getValue() == 'Ambos' && ($usuarioAux->getSexo() == 'Hombres' || $usuarioAux->getSexo() == 'Mujeres')) {
+                        $claves++;
+                    }
+                    if ($preferenciaLogin->getValue() == 'Mujeres' && $usuarioAux->getSexo() == 'Mujer' && ($preferenciaAux->getValue() == 'Hombres' || $preferenciaAux->getValue() == 'Ambos')) {
+                        $claves++;
+                    }
+                    if ($preferenciaLogin->getValue() == 'Hombres' && $usuarioAux->getSexo() == 'Hombre' && ($preferenciaAux->getValue() == 'Mujeres' || $preferenciaAux->getValue() == 'Ambos')) {
+                        $claves++;
+                    }
+                    if ($preferenciaLogin->getValue() == 'Mujeres' && $usuarioAux->getSexo() == 'Mujer' && ($preferenciaAux->getValue() == 'Mujeres' || $preferenciaAux->getValue() == 'Ambos')) {
+                        $claves++;
+                    }
+                    if ($preferenciaLogin->getValue() == 'Hombres' && $usuarioAux->getSexo() == 'Hombre' && ($preferenciaAux->getValue() == 'Hombres' || $preferenciaAux->getValue() == 'Ambos')) {
+                        $claves++;
+                    }
+                    break;
+            }
+        }
+        if ($claves == 3 && $posible >= 2) {
+            $usuariosCandidatos[] = $listaTotalUsuarios[$i];
+        }
+    }
 }
 
 if (isset($_REQUEST['administrarUsuarios'])) {
@@ -234,7 +307,7 @@ if (isset($_REQUEST['admin_newUser'])) {
     $personaAux->setName($_REQUEST['user_newName']);
     $personaAux->setSurname($_REQUEST['user_newSurname']);
     $personaAux->setEmail($_REQUEST['user_newEmail']);
-    $personaAux->setPasswd(['user_newPasswd']);
+    $personaAux->setPasswd($_REQUEST['user_newPasswd']);
     $personaAux->setFecNac($_REQUEST['user_newFecNac']);
     $personaAux->setCountry($_REQUEST['user_newCountry']);
     $personaAux->setCity($_REQUEST['user_newCity']);
@@ -283,13 +356,13 @@ if (isset($_REQUEST['admin_delUser'])) {
 
 if (isset($_REQUEST['admin_editUser'])) {
     $usuarioLogin = $_SESSION['usuarioLogin'];
-    $persona  = new Persona();
+    $persona = new Persona();
     $persona->setId($_REQUEST['persona_idUsuario']);
     $persona->setName($_REQUEST['persona_name']);
     $persona->setSurname($_REQUEST['persona_surname']);
     $persona->setEmail($_REQUEST['persona_email']);
     $persona->setPasswd($_REQUEST['persona_passwd']);
-    switch ($_REQUEST['persona_rol']){
+    switch ($_REQUEST['persona_rol']) {
         case 'Administrador':
             $persona->setRol(1);
             break;
@@ -297,7 +370,7 @@ if (isset($_REQUEST['admin_editUser'])) {
             $persona->setRol(2);
             break;
     }
-    
+
     if (Conexion::editUser($persona)) {
         $listaUsuariosTotal = Conexion::getUsuariosRegistrados($usuarioLogin->getId());
         $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;

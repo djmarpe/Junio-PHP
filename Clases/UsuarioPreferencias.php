@@ -21,11 +21,10 @@ class UsuarioPreferencias {
     private $pais;
     private $localidad;
     private $sexo;
-    private $preferenciaTipo;
-    private $preferenciaValor;
+    private $preferencias;
     
     function __construct() {
-        
+        $this->preferencias = [];
     }
     
     function getIdUsuario() {
@@ -64,14 +63,6 @@ class UsuarioPreferencias {
         return $this->sexo;
     }
 
-    function getPreferenciaTipo() {
-        return $this->preferenciaTipo;
-    }
-
-    function getPreferenciaValor() {
-        return $this->preferenciaValor;
-    }
-
     function setIdUsuario($idUsuario): void {
         $this->idUsuario = $idUsuario;
     }
@@ -107,13 +98,19 @@ class UsuarioPreferencias {
     function setSexo($sexo): void {
         $this->sexo = $sexo;
     }
-
-    function setPreferenciaTipo($preferenciaTipo): void {
-        $this->preferenciaTipo = $preferenciaTipo;
+    
+    function getPreferencias() {
+        return $this->preferencias;
     }
 
-    function setPreferenciaValor($preferenciaValor): void {
-        $this->preferenciaValor = $preferenciaValor;
+    function addPreferencias($preferencias): void {
+        $this->preferencias[] = $preferencias;
     }
+    
+    function setPreferencias($preferencias): void {
+        $this->preferencias = $preferencias;
+    }
+
+
 
 }
