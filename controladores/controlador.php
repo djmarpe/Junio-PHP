@@ -34,7 +34,7 @@ if (isset($_REQUEST['btn_register'])) {
     $personaAux->setName($name);
     $personaAux->setSurname($surname);
     $personaAux->setEmail($email);
-    $personaAux->setPasswd($password);
+    $personaAux->setPasswd($passwd);
     $personaAux->setFecNac($fecNac);
     $personaAux->setCountry($country);
     $personaAux->setCity($city);

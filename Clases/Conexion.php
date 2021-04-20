@@ -69,7 +69,7 @@ class Conexion {
             $val9 = 2;
         }
         $val10 = $personaAux->getStatus();
-        $sentencia1 = "INSERT INTO user VALUES(null,'" . $val1 . "','" . $val2 . "','" . $val3 . "','" . $val4 . "','" . $val5 . "','" . $val6 . "','" . $val7 . "','" . $val8 . "'," . $val9 . "," . $val10 . ")";
+        $sentencia1 = "INSERT INTO user VALUES(null,'" . $val1 . "','" . $val2 . "','" . $val3 . "','" . $val4 . "','" . $val5 . "','" . $val6 . "','" . $val7 . "','" . $val8 . "'," . $val9 . "," . $val10 . ",0)";
 
         //Insertamos el usuario
         if (mysqli_query(self::$conexion, $sentencia1)) {
