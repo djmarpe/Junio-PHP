@@ -283,6 +283,8 @@ if (isset($_REQUEST['verGenteCercana'])) {
             $usuariosCandidatos[] = $listaTotalUsuarios[$i];
         }
     }
+    $_SESSION['usuariosCandidatos'] = $usuariosCandidatos;
+    header('Location: ../Vistas/genteCercana.php');
 }
 
 if (isset($_REQUEST['administrarUsuarios'])) {
@@ -298,6 +300,31 @@ if (isset($_REQUEST['dashboardAdmin'])) {
     $_SESSION['listaAmigos'] = $listaAmigos;
     $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
     header('Location: ../Vistas/panelPrincipalAdministrador.php');
+}
+
+if (isset($_REQUEST['dashboardUsuario'])) {
+    $personaAux = $_SESSION['usuarioLogin'];
+    $listaUsuariosTotal = Conexion::getUsuariosRegistrados($personaAux->getId());
+    $listaAmigos = Conexion::getAmigos($personaAux->getId());
+    $userLogin_preferencias = Conexion::getPreferencias($personaAux->getId());
+    $_SESSION['userLogin_preferencias'] = $userLogin_preferencias;
+    $_SESSION['listaAmigos'] = $listaAmigos;
+    $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
+    header('Location: ../Vistas/panelPrincipalUsuario.php');
+}
+
+if (isset($_REQUEST['verMatch'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+    $usuariosCandidatos = $_SESSION['usuariosCandidatos'];
+    $idUsuarioVer = $_REQUEST['idUsuario'];
+    for ($i = 0; $i < sizeof($usuariosCandidatos); $i++) {
+        $usuarioAux = $usuariosCandidatos[$i];
+        if ($usuarioAux->getIdUsuario() == $idUsuarioVer) {
+            $elegido = $usuariosCandidatos[$i];
+            $_SESSION['usuarioElegido'] = $elegido;
+        }
+    }
+    header('Location: ../Vistas/verMatch.php');
 }
 
 if (isset($_REQUEST['admin_newUser'])) {
