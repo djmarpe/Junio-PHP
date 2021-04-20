@@ -442,6 +442,68 @@ class Conexion {
         self::cerrarConex();
     }
 
+    public static function getUsuarioLoginPreferencias($idUsuario) {
+        self::abrirConex();
+        $preferenciasUsuario = [];
+
+        $sentencia1 = "SELECT * FROM preferences WHERE idUsuario = " . $idUsuario;
+
+        if ($resultado1 = mysqli_query(self::$conexion, $sentencia1)) {
+            while ($row = mysqli_fetch_row($resultado1)) {
+                $preferencia = new Preferencia();
+                $preferencia->setType($row[2]);
+                $preferencia->setValue($row[3]);
+                $preferenciasUsuario[] = $preferencia;
+            }
+        }
+
+        self::cerrarConex();
+        return $preferenciasUsuario;
+    }
+
+    public static function getUsuariosTotal($idUsuarioLogin) {
+        self::abrirConex();
+        $listaTotal = [];
+
+        $sentencia1 = "SELECT * FROM user WHERE id <> " . $idUsuarioLogin;
+
+        if ($resultado1 = mysqli_query(self::$conexion, $sentencia1)) {
+            while ($row1 = mysqli_fetch_row($resultado1)) {
+                $usuarioAuxiliar = new UsuarioPreferencias();
+                $usuarioAuxiliar->setIdUsuario($row1[0]);
+                $usuarioAuxiliar->setNombreUsuario($row1[1]);
+                $usuarioAuxiliar->setApellidosUsuario($row1[2]);
+                $usuarioAuxiliar->setFechaNacimientoUsuario($row1[6]);
+                $usuarioAuxiliar->setDescripcion($row1[5]);
+                $usuarioAuxiliar->setEmail($row1[3]);
+                $usuarioAuxiliar->setPais($row1[7]);
+                $usuarioAuxiliar->setLocalidad($row1[8]);
+                switch ($row1[9]) {
+                    case 1:
+                        $usuarioAuxiliar->setSexo('Hombre');
+                        break;
+                    case 2:
+                        $usuarioAuxiliar->setSexo('Mujer');
+                        break;
+                }
+
+                $sentencia2 = "SELECT tipo, value FROM preferences WHERE idUsuario = " . $usuarioAuxiliar->getIdUsuario();
+                if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
+                    while ($row2 = mysqli_fetch_row($resultado2)) {
+                        $preferencia = new Preferencia();
+                        $preferencia->setType($row2[0]);
+                        $preferencia->setValue($row2[1]);
+                        $usuarioAuxiliar->addPreferencias($preferencia);
+                    }
+                    $listaTotal[] = $usuarioAuxiliar;
+                }
+            }
+        }
+
+        self::cerrarConex();
+        return $listaTotal;
+    }
+
     public static function deleteUser($idUsuario) {
         self::abrirConex();
         $del = false;
@@ -451,7 +513,10 @@ class Conexion {
         if ($resultado1 = mysqli_query(self::$conexion, $sentencia1)) {
             $sentencia2 = "DELETE FROM rolAsignated WHERE idUsuario = " . $idUsuario;
             if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
-                $del = true;
+                $sentencia3 = "DELETE FROM preferences WHERE idUsuario = " . $idUsuario;
+                if ($resultado3 = mysqli_query(self::$conexion, $sentencia3)) {
+                    $del = true;
+                }
             }
         }
 
