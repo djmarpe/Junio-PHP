@@ -17,3 +17,5 @@ rangePolitica = ()  => {
 }
 
 
+
+
