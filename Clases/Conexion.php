@@ -3,6 +3,7 @@
 include_once 'Persona.php';
 include_once 'Preferencia.php';
 include_once 'UsuarioPreferencias.php';
+include_once 'Mensaje.php';
 
 class Conexion {
 
@@ -548,6 +549,27 @@ class Conexion {
 
         self::cerrarConex();
         return $ok;
+    }
+
+    public static function enviarMensaje($mensaje) {
+        self::abrirConex();
+
+        $enviado = false;
+
+        $idUsuarioEmisor = $mensaje->getIdUsuarioEmisor();
+        $idUsuarioReceptor = $mensaje->getIdUsuarioReceptor();
+        $asunto = $mensaje->getAsunto();
+        $cuerpo = $mensaje->getCuerpo();
+        $leido = $mensaje->getLeido();
+
+        $sentencia = "INSERT INTO mensaje VALUES(null," . $idUsuarioEmisor . "," . $idUsuarioReceptor . ",'" . $asunto . "','" . $cuerpo . "'," . $leido . ")";
+
+        if (mysqli_query(self::$conexion, $sentencia)) {
+            $enviado = true;
+        }
+
+        self::cerrarConex();
+        return $enviado;
     }
 
 }

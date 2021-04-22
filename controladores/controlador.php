@@ -3,6 +3,7 @@
 require_once '../Clases/Persona.php';
 require_once '../Clases/Conexion.php';
 require_once '../Clases/Preferencia.php';
+require_once '../Clases/Mensaje.php';
 
 session_abort();
 session_start();
@@ -284,6 +285,9 @@ if (isset($_REQUEST['verGenteCercana'])) {
         }
     }
     $_SESSION['usuariosCandidatos'] = $usuariosCandidatos;
+    if (isset($_SESSION['mensaje'])) {
+        unset($_SESSION['mensaje']);
+    }
     header('Location: ../Vistas/genteCercana.php');
 }
 
@@ -402,5 +406,25 @@ if (isset($_REQUEST['admin_editUser'])) {
         $listaUsuariosTotal = Conexion::getUsuariosRegistrados($usuarioLogin->getId());
         $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
         header('Location: ../Vistas/administradorUsuarios.php');
+    }
+}
+
+if (isset($_REQUEST['enviarMensaje'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+    $idUsuarioEmisor = $usuarioLogin->getId();
+    $idUsuarioReceptor = $_REQUEST['idUsuarioEmisor'];
+    $asunto = $_REQUEST['subject'];
+    $cuerpo = $_REQUEST['body'];
+
+    $mensaje = new Mensaje();
+    $mensaje->setIdUsuarioEmisor($idUsuarioEmisor);
+    $mensaje->setIdUsuarioReceptor($idUsuarioReceptor);
+    $mensaje->setAsunto($asunto);
+    $mensaje->setCuerpo($cuerpo);
+    $mensaje->setLeido(0);
+
+    if (Conexion::enviarMensaje($mensaje)) {
+        $_SESSION['mensaje'] = 'Mensaje enviado correctamente';
+        header('Location: ../Vistas/verMatch.php');
     }
 }

@@ -59,6 +59,14 @@ and open the template in the editor.
             <div class="col-12 bg-white">
                 <input type="hidden" name="nombre" value="<?= $usuarioMatch->getNombreUsuario() ?>">
                 <input type="hidden" name="apellido" value="<?= $usuarioMatch->getApellidosUsuario() ?>">
+                <?php
+                if (isset($_SESSION['mensaje'])) {
+                    ?>
+                    <small class="my-5 d-block text-center bg-success mx-5 text-white"><?= $_SESSION['mensaje'] ?></small>
+                    <?php
+                }
+                ?>
+
                 <h3 class="my-5 text-decoration-underline text-center"><?= $usuarioMatch->getNombreUsuario() . ' ' . $usuarioMatch->getApellidosUsuario() ?></h3>
                 <div class="row m-0">
                     <div class="col-12 col-sm-6">
@@ -105,27 +113,28 @@ and open the template in the editor.
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="../controladores/controlador.php">
+                                        <form action="../controladores/controlador.php" method="POST" enctype="multipart/form-data">
                                             <div class="mb-2">
                                                 <small class="d-block float-start">De:</small>
+                                                <input type="hidden" name="idUsuarioEmisor" value="<?= $usuarioLogin->getId() ?>">
                                                 <input type="email" name="email_from" class="form-control" id="emailUsuarioEmisor" readonly>
                                             </div>
 
                                             <div class="my-2">
                                                 <small class="d-block float-start">Para:</small>
+                                                <input type="hidden" name="idUsuarioEmisor" value="<?= $usuarioMatch->getIdUsuario() ?>">
                                                 <input type="email" name="email_to" class="form-control" id="emailUsuarioReceptor" readonly>
                                             </div>
-                                            
+
                                             <div class="my-2">
                                                 <small class="d-block float-start">Asunto:</small>
-                                                <input type="email" name="subject" class="form-control">
+                                                <input type="text" name="subject" class="form-control">
                                             </div>
 
                                             <div class="my-2">
                                                 <small class="d-block float-start">Mensaje:</small>
-                                                <textarea type="text" rows="5" name="text" class="form-control"></textarea>
+                                                <textarea type="text" rows="5" name="body" class="form-control"></textarea>
                                             </div>
-                                            
                                             <input type="submit" class="btn btn-primary my-2" value="Enviar" name="enviarMensaje">
                                         </form>
                                     </div>
