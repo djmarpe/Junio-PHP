@@ -412,7 +412,7 @@ if (isset($_REQUEST['admin_editUser'])) {
 if (isset($_REQUEST['enviarMensaje'])) {
     $usuarioLogin = $_SESSION['usuarioLogin'];
     $idUsuarioEmisor = $usuarioLogin->getId();
-    $idUsuarioReceptor = $_REQUEST['idUsuarioEmisor'];
+    $idUsuarioReceptor = Conexion::getIdUsuario($_REQUEST['email_to']);
     $asunto = $_REQUEST['subject'];
     $cuerpo = $_REQUEST['body'];
 
@@ -425,6 +425,23 @@ if (isset($_REQUEST['enviarMensaje'])) {
 
     if (Conexion::enviarMensaje($mensaje)) {
         $_SESSION['mensaje'] = 'Mensaje enviado correctamente';
-        header('Location: ../Vistas/verMatch.php');
+        switch ($_SESSION['estoyEn']) {
+            case 'verMensajesEnviados':
+                $listaMensajesEnviados = Conexion::getMensajesEnviadosUsuario($usuarioLogin->getId());
+                $_SESSION['mensajesEnviados'] = $listaMensajesEnviados;
+                header('Location: ../Vistas/verMensajesEnviados.php');
+                break;
+            default :header('Location: ../Vistas/verMatch.php');
+        }
     }
+}
+
+if (isset($_REQUEST['verMensajesEnviados'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+
+    $listaMensajesEnviados = Conexion::getMensajesEnviadosUsuario($usuarioLogin->getId());
+
+    $_SESSION['mensajesEnviados'] = $listaMensajesEnviados;
+    $_SESSION['estoyEn'] = 'verMensajesEnviados';
+    header('Location: ../Vistas/verMensajesEnviados.php');
 }
