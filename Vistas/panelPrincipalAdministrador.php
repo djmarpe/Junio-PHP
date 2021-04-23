@@ -97,7 +97,7 @@ and open the template in the editor.
                             <?php
                         }
                         ?>
-                        <a href="../controladores/controlador.php?verMisMensajes=verMisMensajes" class="btn btn-outline-primary mt-4">Ver mensajes</a>
+                        <a href="../controladores/controlador.php?verMensajesEnviados=verMensajesEnviados" class="btn btn-outline-primary mt-4">Ver mensajes enviados</a>
                     </div>
                     <div class="col-12 col-md-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
                         <h5 class="m-0 py-1">Administrador de usuarios</h5>

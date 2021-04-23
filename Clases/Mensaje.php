@@ -14,7 +14,9 @@
 class Mensaje {
     private $id;
     private $idUsuarioEmisor;
+    private $emailUsuarioEmisor;
     private $idUsuarioReceptor;
+    private $emailUsuarioReceptor;
     private $asunto;
     private $cuerpo;
     private $leido;
@@ -69,6 +71,22 @@ class Mensaje {
 
     function setLeido($leido): void {
         $this->leido = $leido;
+    }
+
+    function getEmailUsuarioEmisor() {
+        return $this->emailUsuarioEmisor;
+    }
+
+    function getEmailUsuarioReceptor() {
+        return $this->emailUsuarioReceptor;
+    }
+
+    function setEmailUsuarioEmisor($emailUsuarioEmisor): void {
+        $this->emailUsuarioEmisor = $emailUsuarioEmisor;
+    }
+
+    function setEmailUsuarioReceptor($emailUsuarioReceptor): void {
+        $this->emailUsuarioReceptor = $emailUsuarioReceptor;
     }
 
 }

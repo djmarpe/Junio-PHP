@@ -289,6 +289,23 @@ class Conexion {
         return $listaAmigos;
     }
 
+    public static function getIdUsuario($email) {
+        self::abrirConex();
+
+        $id = 0;
+
+        $sentencia = "SELECT id FROM user WHERE email = '" . $email . "'";
+
+        if ($resultado = mysqli_query(self::$conexion, $sentencia)) {
+            if ($row = mysqli_fetch_row($resultado)) {
+                $id = $row[0];
+            }
+        }
+
+        self::cerrarConex();
+        return $id;
+    }
+
     public static function estadoOnline($idUsuario) {
         self::abrirConex();
 
@@ -570,6 +587,43 @@ class Conexion {
 
         self::cerrarConex();
         return $enviado;
+    }
+
+    public static function getMensajesEnviadosUsuario($idUsuario) {
+        self::abrirConex();
+
+        $listaMensajes = [];
+
+        $sentencia = "SELECT * FROM mensaje WHERE idUsuarioEmisor = " . $idUsuario;
+
+        if ($resultado = mysqli_query(self::$conexion, $sentencia)) {
+            while ($row = mysqli_fetch_row($resultado)) {
+                $mensaje = new Mensaje();
+                $mensaje->setId($row[0]);
+                $mensaje->setIdUsuarioEmisor($idUsuario);
+                $mensaje->setIdUsuarioReceptor($row[2]);
+                $mensaje->setAsunto($row[3]);
+                $mensaje->setCuerpo($row[4]);
+                $mensaje->setLeido($row[5]);
+                $sentencia2 = "SELECT email FROM user WHERE id=" . $idUsuario;
+                if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
+                    if ($row2 = mysqli_fetch_row($resultado2)) {
+                        $mensaje->setEmailUsuarioEmisor($row2[0]);
+                    }
+                }
+
+                $sentencia2 = "SELECT email FROM user WHERE id=" . $row[2];
+                if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
+                    if ($row2 = mysqli_fetch_row($resultado2)) {
+                        $mensaje->setEmailUsuarioReceptor($row2[0]);
+                        $listaMensajes[] = $mensaje;
+                    }
+                }
+            }
+        }
+
+        self::cerrarConex();
+        return $listaMensajes;
     }
 
 }
