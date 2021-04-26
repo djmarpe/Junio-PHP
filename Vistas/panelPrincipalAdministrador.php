@@ -27,9 +27,6 @@ and open the template in the editor.
         if (isset($_SESSION['usuariosOnline'])) {
             $usuariosOnline = $_SESSION['usuariosOnline'];
         }
-        if (isset($_SESSION['listaMensajes'])) {
-            $listaMensajes = $_SESSION['listaMensajes'];
-        }
         if (isset($_SESSION['listaUsuariosTotal'])) {
             $listaUsuariosTotal = $_SESSION['listaUsuariosTotal'];
         }
@@ -87,14 +84,16 @@ and open the template in the editor.
                     <div class="col-12 col-md-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
                         <h5 class="m-0 py-1">Bandeja de entrada</h5>
                         <?php
-                        if (sizeof($listaMensajes) == 0) {
-                            ?>
-                            <small class="d-block">No tienes mensajes nuevos</small>
-                            <?php
-                        } else {
-                            ?>
-                            <small class="d-block">Tienes <span class="text-success"><?= sizeof($listaMensajes) ?></span> mensajes pendientes sin leer</small>
-                            <?php
+                        if (isset($_SESSION['mensajesPendientes'])) {
+                            if ($_SESSION['mensajesPendientes'] == 0) {
+                                ?>
+                                <small class="d-block">No tienes mensajes nuevos</small>
+                                <?php
+                            } else {
+                                ?>
+                                <small class="d-block">Tienes <span class="text-success"><?= $_SESSION['mensajesPendientes'] ?></span> mensajes pendientes sin leer</small>
+                                <?php
+                            }
                         }
                         ?>
                         <a href="../controladores/controlador.php?verMensajesEnviados=verMensajesEnviados" class="btn btn-outline-primary mt-4">Ver mensajes enviados</a>

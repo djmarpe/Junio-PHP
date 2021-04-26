@@ -676,4 +676,21 @@ class Conexion {
         return $listaMensajes;
     }
 
+    public static function getCuantosMensajesPendientes($idUsuario) {
+        self::abrirConex();
+
+        $cuantos = 0;
+
+        $sentencia = "SELECT COUNT(*) FROM mensaje WHERE idUsuarioReceptor = " . $idUsuario . " AND leido = 0";
+
+        if ($resultado = mysqli_query(self::$conexion, $sentencia)) {
+            if ($row = mysqli_fetch_row($resultado)) {
+                $cuantos = $row[0];
+            }
+        }
+
+        self::cerrarConex();
+        return $cuantos;
+    }
+
 }

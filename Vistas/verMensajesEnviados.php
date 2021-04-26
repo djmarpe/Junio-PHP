@@ -68,11 +68,13 @@ and open the template in the editor.
                 <div class="row m-0 justify-content-between">
                     <div class="col-12 col-md-7 m-0 p-0">
                         <h5 class="my-2 text-center">Mensajes enviados</h5>
-                        <table class="w-100">
+                        <table class="w-100 table">
                             <tr>
                                 <th>De</th>
                                 <th>Para</th>
                                 <th>Asunto</th>
+                                <th></th>
+                                <th></th>
                             </tr>
                             <?php
                             if (isset($listaMensajesEnviados)) {

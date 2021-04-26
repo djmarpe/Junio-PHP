@@ -61,6 +61,7 @@ if ($_REQUEST['leerMensaje']) {
 
     if (Conexion::leerMensaje($idMensaje)) {
         $listaMensajesRecibidos = Conexion::getMensajesRebidosUsuario($usuarioLogin->getId());
+        $_SESSION['mensajesPendientes'] = Conexion::getCuantosMensajesPendientes($usuarioLogin->getId());
         $_SESSION['mensajesRecibidos'] = $listaMensajesRecibidos;
         $_SESSION['estoyEn'] = 'verMensajesRecibidos';
         header('Location: ../Vistas/verMensajesRecibidos.php');
@@ -90,6 +91,7 @@ if (isset($_REQUEST['btn_login'])) {
                             $listaUsuariosTotal = Conexion::getUsuariosRegistrados($personaAux->getId());
                             $listaAmigos = Conexion::getAmigos($personaAux->getId());
                             $userLogin_preferencias = Conexion::getPreferencias($personaAux->getId());
+                            $_SESSION['mensajesPendientes'] = Conexion::getCuantosMensajesPendientes($personaAux->getId());
                             $_SESSION['userLogin_preferencias'] = $userLogin_preferencias;
                             $_SESSION['listaAmigos'] = $listaAmigos;
                             $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
@@ -108,6 +110,7 @@ if (isset($_REQUEST['btn_login'])) {
                         case 2:
                             $listaAmigos = Conexion::getAmigos($personaAux->getId());
                             $userLogin_preferencias = Conexion::getPreferencias($personaAux->getId());
+                            $_SESSION['mensajesPendientes'] = Conexion::getCuantosMensajesPendientes($personaAux->getId());
                             $_SESSION['userLogin_preferencias'] = $userLogin_preferencias;
                             $_SESSION['listaAmigos'] = $listaAmigos;
                             header('Location: ../Vistas/panelPrincipalUsuario.php');
@@ -309,6 +312,7 @@ if (isset($_REQUEST['administrarUsuarios'])) {
 
 if (isset($_REQUEST['dashboardAdmin'])) {
     $personaAux = $_SESSION['usuarioLogin'];
+    $_SESSION['mensajesPendientes'] = Conexion::getCuantosMensajesPendientes($personaAux->getId());
     $listaUsuariosTotal = Conexion::getUsuariosRegistrados($personaAux->getId());
     $listaAmigos = Conexion::getAmigos($personaAux->getId());
     $userLogin_preferencias = Conexion::getPreferencias($personaAux->getId());
