@@ -55,6 +55,18 @@ if (isset($_REQUEST['btn_register'])) {
     die();
 }
 
+if ($_REQUEST['leerMensaje']) {
+    $idMensaje = $_REQUEST['idMensaje'];
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+
+    if (Conexion::leerMensaje($idMensaje)) {
+        $listaMensajesRecibidos = Conexion::getMensajesRebidosUsuario($usuarioLogin->getId());
+        $_SESSION['mensajesRecibidos'] = $listaMensajesRecibidos;
+        $_SESSION['estoyEn'] = 'verMensajesRecibidos';
+        header('Location: ../Vistas/verMensajesRecibidos.php');
+    }
+}
+
 if (isset($_REQUEST['btn_login'])) {
 
     $email = $_REQUEST['login_email'];
@@ -303,6 +315,9 @@ if (isset($_REQUEST['dashboardAdmin'])) {
     $_SESSION['userLogin_preferencias'] = $userLogin_preferencias;
     $_SESSION['listaAmigos'] = $listaAmigos;
     $_SESSION['listaUsuariosTotal'] = $listaUsuariosTotal;
+    if (isset($_SESSION['mensajesRecibidos'])) {
+        unset($_SESSION['mensajesRecibidos']);
+    }
     header('Location: ../Vistas/panelPrincipalAdministrador.php');
 }
 
@@ -431,6 +446,11 @@ if (isset($_REQUEST['enviarMensaje'])) {
                 $_SESSION['mensajesEnviados'] = $listaMensajesEnviados;
                 header('Location: ../Vistas/verMensajesEnviados.php');
                 break;
+            case 'verMensajesRecibidos':
+                $listaMensajesRecibidos = Conexion::getMensajesRebidosUsuario($usuarioLogin->getId());
+                $_SESSION['mensajesRecibidos'] = $listaMensajesRecibidos;
+                header('Location: ../Vistas/verMensajesRecibidos.php');
+                break;
             default :header('Location: ../Vistas/verMatch.php');
         }
     }
@@ -444,4 +464,14 @@ if (isset($_REQUEST['verMensajesEnviados'])) {
     $_SESSION['mensajesEnviados'] = $listaMensajesEnviados;
     $_SESSION['estoyEn'] = 'verMensajesEnviados';
     header('Location: ../Vistas/verMensajesEnviados.php');
+}
+
+if (isset($_REQUEST['verMensajesRecibidos'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+
+    $listaMensajesRecibidos = Conexion::getMensajesRebidosUsuario($usuarioLogin->getId());
+
+    $_SESSION['mensajesRecibidos'] = $listaMensajesRecibidos;
+    $_SESSION['estoyEn'] = 'verMensajesRecibidos';
+    header('Location: ../Vistas/verMensajesRecibidos.php');
 }

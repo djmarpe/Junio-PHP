@@ -10,7 +10,7 @@ and open the template in the editor.
         <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="../css/all.min.css">
         <link rel="stylesheet" type="text/css" href="../css/miCss.css">
-        <title>Mensajes enviados</title>
+        <title>Mensajes recibidos</title>
     </head>
     <body class="background-dark-blue">
         <?php
@@ -18,10 +18,9 @@ and open the template in the editor.
         require_once '../Clases/Mensaje.php';
         session_start();
         $usuarioLogin = $_SESSION['usuarioLogin'];
-        if (isset($_SESSION['mensajesEnviados'])) {
-            $listaMensajesEnviados = $_SESSION['mensajesEnviados'];
+        if (isset($_SESSION['mensajesRecibidos'])) {
+            $listaMensajesRecibidos = $_SESSION['mensajesRecibidos'];
         }
-
         $listaAmigos = [];
         if (isset($_SESSION['listaAmigos'])) {
             $listaAmigos = $_SESSION['listaAmigos'];
@@ -57,7 +56,7 @@ and open the template in the editor.
                             <?php
                         }
                         ?>
-                        <li class="breadcrumb-item active">Ver mensajes enviados</li>
+                        <li class="breadcrumb-item active">Ver mensajes recibidos</li>
                     </ol>
                 </nav>
             </div>
@@ -67,7 +66,7 @@ and open the template in the editor.
             <div class="col-12 bg-white">
                 <div class="row m-0 justify-content-between">
                     <div class="col-12 col-md-7 m-0 p-0">
-                        <h5 class="my-2 text-center">Mensajes enviados</h5>
+                        <h5 class="my-2 text-center">Mensajes recibidos</h5>
                         <table class="w-100">
                             <tr>
                                 <th>De</th>
@@ -75,12 +74,13 @@ and open the template in the editor.
                                 <th>Asunto</th>
                             </tr>
                             <?php
-                            if (isset($listaMensajesEnviados)) {
-                                if (sizeof($listaMensajesEnviados) > 0) {
-                                    for ($i = 0; $i < sizeof($listaMensajesEnviados); $i++) {
-                                        $mensajeAux = $listaMensajesEnviados[$i];
+                            if (isset($listaMensajesRecibidos)) {
+                                if (sizeof($listaMensajesRecibidos) > 0) {
+                                    for ($i = 0; $i < sizeof($listaMensajesRecibidos); $i++) {
+                                        $mensajeAux = $listaMensajesRecibidos[$i];
                                         ?>
                                         <tr>
+                                        <input type="hidden" name="idMensaje" id="idMensaje<?= $i ?>" value="<?= $mensajeAux->getId() ?>">
                                         <input type="hidden" name="idUsuarioEmisor" id="idUsuarioEmisor" value="<?= $mensajeAux->getIdUsuarioEmisor() ?>">
                                         <td name="ver_emailEmisor" id="ver_usuarioEmisor<?= $i ?>"><?= $mensajeAux->getEmailUsuarioEmisor() ?></td>
                                         <input type="hidden" name="idUsuarioReceptor" id="idUsuarioReceptor" value="<?= $mensajeAux->getIdUsuarioReceptor() ?>">
@@ -110,7 +110,10 @@ and open the template in the editor.
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="exampleModalLabel">Mensaje enviado</h5>
-                                                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cerrar</button>
+                                                        <form action="../controladores/controlador.php" method="POST">
+                                                            <input type="hidden" name="idMensaje" id="leer_idMensaje" value="">
+                                                            <input type="submit" class="btn btn-outline-primary" name="leerMensaje" value="Cerrar">
+                                                        </form>
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="mb-2">
@@ -146,7 +149,7 @@ and open the template in the editor.
                             } else {
                                 ?>
                                 <tr>
-                                    <td colspan="5"><small class="d-block text-center">No hay mensajes enviados</small></td>
+                                    <td colspan="5"><small class="d-block text-center">No hay mensajes recibidos</small></td>
                                 </tr>
 
                                 <?php
@@ -217,6 +220,10 @@ and open the template in the editor.
 
         <script>
             function ver(i) {
+                let idMensaje = document.getElementById('idMensaje' + i).value;
+                console.log(idMensaje);
+                document.getElementById('leer_idMensaje').value = idMensaje;
+
                 let usuarioEmisor = document.getElementById('ver_usuarioEmisor' + i).innerText;
                 document.getElementById('mensaje_Emisor').value = usuarioEmisor;
 
