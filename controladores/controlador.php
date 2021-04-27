@@ -345,7 +345,45 @@ if (isset($_REQUEST['verMatch'])) {
         if ($usuarioAux->getIdUsuario() == $idUsuarioVer) {
             $elegido = $usuariosCandidatos[$i];
             $_SESSION['usuarioElegido'] = $elegido;
+            $_SESSION['mensaje'] = '';
         }
+    }
+    header('Location: ../Vistas/verMatch.php');
+}
+
+if (isset($_REQUEST['conectarAmigo'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+    $idUsuarioMatch = $_REQUEST['idUsuario'];
+
+    //Compruebo si ya soy amigo de esa persona
+    if (!Conexion::EsAmigo($usuarioLogin->getId(), $idUsuarioMatch)) {
+        //Si no lo soy, compruebo si tengo solicitudes, la persona me ha enviado a mi la solicitud
+        if (!Conexion::tengoSolicitudes($usuarioLogin->getId(), $idUsuarioMatch)) {
+            //Si no me ha mandado solicitud la persona
+            if (!Conexion::existeSolicitud($usuarioLogin->getId(), $idUsuarioMatch)) {
+                //Compruebo si yo le he mandado ya una a la persona
+                if (Conexion::enviarSolicitud($usuarioLogin->getId(), $idUsuarioMatch)) {
+                    //Si no se la he mandado ya, se la mando
+                    $_SESSION['mensaje'] = 'Solicitud enviada correctamente';
+                } else {
+                    $_SESSION['mensaje'] = 'Error al enviar la solicitud';
+                }
+            } else {
+                $_SESSION['mensaje'] = 'Ya hay una solicitud procesada';
+            }
+        } else {
+            if (!Conexion::existeSolicitud($usuarioLogin->getId(), $idUsuarioMatch)) {
+                if (Conexion::aceptarSolicitud($usuarioLogin->getId(), $idUsuarioMatch)) {
+                    $listaAmigos = Conexion::getAmigos($usuarioLogin->getId());
+                    $_SESSION['listaAmigos'] = $listaAmigos;
+                    $_SESSION['mensaje'] = 'Nuevo amigo';
+                }
+            } else {
+                $_SESSION['mensaje'] = 'Ya hay una solicitud procesada';
+            }
+        }
+    } else {
+        $_SESSION['mensaje'] = 'Ya son amigos';
     }
     header('Location: ../Vistas/verMatch.php');
 }
