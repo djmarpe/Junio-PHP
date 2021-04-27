@@ -70,7 +70,6 @@ and open the template in the editor.
                 <h3 class="my-5 text-decoration-underline text-center"><?= $usuarioMatch->getNombreUsuario() . ' ' . $usuarioMatch->getApellidosUsuario() ?></h3>
                 <div class="row m-0">
                     <div class="col-12 col-sm-6">
-                        <input type="hidden" id="idUsuario" value="<?= $usuarioMatch->getIdUsuario() ?>">
                         <p><?= $usuarioMatch->getDescripcion() ?></p>
                     </div>
                     <div class="col-12 col-sm-6">
@@ -101,7 +100,21 @@ and open the template in the editor.
                 </div>
                 <div class="row m-0">
                     <form action="../controladores/controlador.php" method="POST" class="col-12 my-3 text-center">
-                        <input type="submit" name="conectarAmigo" value="Conectar" class="btn btn-primary">
+                        <input type="hidden" id="idUsuario" name="idUsuario" value="<?= $usuarioMatch->getIdUsuario() ?>">
+                        <?php
+                        if (isset($_SESSION['mensaje'])) {
+                            if ($_SESSION['mensaje'] == 'Nuevo amigo') {
+                                ?>
+                                <input type="submit" name="conectarAmigo" value="Conectar" class="btn btn-primary" disabled>
+                                <?php
+                            } else {
+                                ?>
+                                <input type="submit" name="conectarAmigo" value="Conectar" class="btn btn-primary">
+                                <?php
+                            }
+                        }
+                        ?>
+
                         <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
                             Enviar mensaje
                         </button>

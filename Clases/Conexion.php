@@ -639,6 +639,82 @@ class Conexion {
         return $listaMensajes;
     }
 
+    public static function EsAmigo($idUsuarioEmisor, $idUsuarioReceptor) {
+        self::abrirConex();
+        $es = false;
+
+        $sentencia = "SELECT * FROM friends WHERE (idUsuarioEmitter=" . $idUsuarioEmisor . " OR idUsuarioEmitter=" . $idUsuarioReceptor . ") AND (idUsuarioReceiver=" . $idUsuarioEmisor . " OR idUsuarioReceiver=" . $idUsuarioReceptor . ") AND status = 1";
+
+        if ($resultado = mysqli_query(self::$conexion, $sentencia)) {
+            if ($row = mysqli_fetch_row($resultado)) {
+                $es = true;
+            }
+        }
+
+        self::cerrarConex();
+        return $es;
+    }
+
+    public static function tengoSolicitudes($idUsuarioEmisor, $idUsuarioReceptor) {
+        self::abrirConex();
+        $tengo = false;
+
+        $sentencia = "SELECT * FROM friends WHERE (idUsuarioEmitter=" . $idUsuarioReceptor . " OR idUsuarioEmitter=" . $idUsuarioEmisor . ") AND (idUsuarioReceiver=" . $idUsuarioEmisor . " OR idUsuarioReceiver = " . $idUsuarioReceptor . ") AND status = 0";
+
+        if ($resultado = mysqli_query(self::$conexion, $sentencia)) {
+            if ($row = mysqli_fetch_row($resultado)) {
+                $tengo = true;
+            }
+        }
+
+        self::cerrarConex();
+        return $tengo;
+    }
+
+    public static function existeSolicitud($idUsuarioEmisor, $idUsuarioReceptor) {
+        self::abrirConex();
+        $existe = false;
+
+        $sentencia = "SELECT * FROM friends WHERE idUsuarioEmitter=" . $idUsuarioEmisor . " AND idUsuarioReceiver=" . $idUsuarioReceptor . " AND status = 0";
+
+        if ($resultado = mysqli_query(self::$conexion, $sentencia)) {
+            if ($row = mysqli_fetch_row($resultado)) {
+                $existe = true;
+            }
+        }
+
+        self::cerrarConex();
+        return $existe;
+    }
+
+    public static function enviarSolicitud($idUsuarioEmisor, $idUsuarioReceptor) {
+        self::abrirConex();
+        $enviada = false;
+
+        $setencia = "INSERT INTO friends VALUES(" . $idUsuarioEmisor . "," . $idUsuarioReceptor . ",0)";
+
+        if (mysqli_query(self::$conexion, $setencia)) {
+            $enviada = true;
+        }
+
+        self::cerrarConex();
+        return $enviada;
+    }
+
+    public static function aceptarSolicitud($idUsuarioEmisor, $idUsuarioReceptor) {
+        self::abrirConex();
+        $ok = false;
+
+        $sentencia = "UPDATE friends SET status = 1 WHERE (idUsuarioEmitter=" . $idUsuarioEmisor . " OR idUsuarioEmitter=" . $idUsuarioReceptor . ") AND (idUsuarioReceiver=" . $idUsuarioEmisor . " OR idUsuarioReceiver=" . $idUsuarioReceptor . ")";
+
+        if (mysqli_query(self::$conexion, $sentencia)) {
+            $ok = true;
+        }
+
+        self::cerrarConex();
+        return $ok;
+    }
+
     public static function getMensajesRebidosUsuario($idUsuario) {
         self::abrirConex();
 
