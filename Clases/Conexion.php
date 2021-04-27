@@ -146,17 +146,12 @@ class Conexion {
         $ok = false;
 
         //Preparamos la consulta
-        $consulta = 'SELECT * FROM user WHERE email=? AND passwd=?';
-        $stmt = self::$conexion->prepare($consulta);
-        $stmt->bind_param("ss", $val1, $val2);
-        $val1 = $email;
-        $val2 = $passwd;
-        $stmt->execute();
+        $consulta = "SELECT * FROM user WHERE email='" . $email . "' AND passwd='" . $passwd . "'";
 
         //Ejecutamos la sentencia
-        if ($resultado = $stmt->get_result()) {
-            if ($row = $resultado->fetch_assoc()) {
-                if ($email == $row[email] && $passwd == $row[passwd]) {
+        if ($resultado = mysqli_query(self::$conexion, $consulta)) {
+            if ($row = mysqli_fetch_row($resultado)) {
+                if ($email == $row[3] && $passwd == $row[4]) {
                     $ok = true;
                 }
             }
@@ -248,38 +243,42 @@ class Conexion {
 
         $listaAmigos = [];
 
-        $sentencia = "SELECT * FROM friends WHERE idUsuarioEmitter=? AND status=1";
+        $sentencia = "SELECT * FROM friends WHERE idUsuarioEmitter=? or idUsuarioReceiver=? AND status=1";
 
         $stmt = self::$conexion->prepare($sentencia);
-        $stmt->bind_param("i", $val1);
+        $stmt->bind_param("ii", $val1, $val1);
         $val1 = $idUsuario;
         $stmt->execute();
         if ($resultado = $stmt->get_result()) {
             while ($row = mysqli_fetch_array($resultado)) {
-                $idUsuarioReceptor = $row[1];
-                $sentencia2 = "SELECT * FROM user WHERE id=" . $idUsuarioReceptor;
-                if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
-                    if ($fila = mysqli_fetch_array($resultado2)) {
-                        $amigoAux = new Persona();
-                        $amigoAux->setId($fila[0]);
-                        $amigoAux->setName($fila[1]);
-                        $amigoAux->setSurname($fila[2]);
-                        $amigoAux->setEmail($fila[3]);
-                        $amigoAux->setPasswd($fila[4]);
-                        $amigoAux->setDescription($fila[5]);
-                        $amigoAux->setFecNac($fila[6]);
-                        $amigoAux->setCountry($fila[7]);
-                        $amigoAux->setCity($fila[8]);
-                        switch ($fila[9]) {
-                            case 1:
-                                $amigoAux->setSex('Hombre');
-                                break;
-                            case 2:
-                                $amigoAux->setSex('Mujer');
-                                break;
+                for ($i = 0; $i < 2; $i++) {
+                    if ($row[$i] != $idUsuario) {
+                        $idUsuarioReceptor = $row[$i];
+                        $sentencia2 = "SELECT * FROM user WHERE id=" . $idUsuarioReceptor;
+                        if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
+                            if ($fila = mysqli_fetch_array($resultado2)) {
+                                $amigoAux = new Persona();
+                                $amigoAux->setId($fila[0]);
+                                $amigoAux->setName($fila[1]);
+                                $amigoAux->setSurname($fila[2]);
+                                $amigoAux->setEmail($fila[3]);
+                                $amigoAux->setPasswd($fila[4]);
+                                $amigoAux->setDescription($fila[5]);
+                                $amigoAux->setFecNac($fila[6]);
+                                $amigoAux->setCountry($fila[7]);
+                                $amigoAux->setCity($fila[8]);
+                                switch ($fila[9]) {
+                                    case 1:
+                                        $amigoAux->setSex('Hombre');
+                                        break;
+                                    case 2:
+                                        $amigoAux->setSex('Mujer');
+                                        break;
+                                }
+                                $amigoAux->setStatus($fila[10]);
+                                $listaAmigos[] = $amigoAux;
+                            }
                         }
-                        $amigoAux->setStatus($fila[10]);
-                        $listaAmigos[] = $amigoAux;
                     }
                 }
             }
@@ -287,6 +286,20 @@ class Conexion {
 
         self::cerrarConex();
         return $listaAmigos;
+    }
+
+    public static function leerMensaje($idMensaje) {
+        self::abrirConex();
+        $leido = false;
+
+        $sentencia = "UPDATE mensaje SET leido = 1 WHERE id=" . $idMensaje;
+
+        if (mysqli_query(self::$conexion, $sentencia)) {
+            $leido = true;
+        }
+
+        self::cerrarConex();
+        return $leido;
     }
 
     public static function getIdUsuario($email) {
@@ -624,6 +637,60 @@ class Conexion {
 
         self::cerrarConex();
         return $listaMensajes;
+    }
+
+    public static function getMensajesRebidosUsuario($idUsuario) {
+        self::abrirConex();
+
+        $listaMensajes = [];
+
+        $sentencia = "SELECT * FROM mensaje WHERE idUsuarioReceptor = " . $idUsuario;
+
+        if ($resultado = mysqli_query(self::$conexion, $sentencia)) {
+            while ($row = mysqli_fetch_row($resultado)) {
+                $mensaje = new Mensaje();
+                $mensaje->setId($row[0]);
+                $mensaje->setIdUsuarioEmisor($row[1]);
+                $mensaje->setIdUsuarioReceptor($idUsuario);
+                $mensaje->setAsunto($row[3]);
+                $mensaje->setCuerpo($row[4]);
+                $mensaje->setLeido($row[5]);
+                $sentencia2 = "SELECT email FROM user WHERE id=" . $row[1];
+                if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
+                    if ($row2 = mysqli_fetch_row($resultado2)) {
+                        $mensaje->setEmailUsuarioEmisor($row2[0]);
+                    }
+                }
+
+                $sentencia2 = "SELECT email FROM user WHERE id=" . $idUsuario;
+                if ($resultado2 = mysqli_query(self::$conexion, $sentencia2)) {
+                    if ($row2 = mysqli_fetch_row($resultado2)) {
+                        $mensaje->setEmailUsuarioReceptor($row2[0]);
+                        $listaMensajes[] = $mensaje;
+                    }
+                }
+            }
+        }
+
+        self::cerrarConex();
+        return $listaMensajes;
+    }
+
+    public static function getCuantosMensajesPendientes($idUsuario) {
+        self::abrirConex();
+
+        $cuantos = 0;
+
+        $sentencia = "SELECT COUNT(*) FROM mensaje WHERE idUsuarioReceptor = " . $idUsuario . " AND leido = 0";
+
+        if ($resultado = mysqli_query(self::$conexion, $sentencia)) {
+            if ($row = mysqli_fetch_row($resultado)) {
+                $cuantos = $row[0];
+            }
+        }
+
+        self::cerrarConex();
+        return $cuantos;
     }
 
 }
