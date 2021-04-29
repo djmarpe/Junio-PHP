@@ -769,4 +769,18 @@ class Conexion {
         return $cuantos;
     }
 
+    public static function eliminarAmigo($idUsuarioPrincipal, $idUsuarioAmigo) {
+        self::abrirConex();
+        $ok = false;
+
+        $sentencia = "DELETE FROM friends WHERE (idUsuarioEmitter=" . $idUsuarioPrincipal . " or idUsuarioEmitter=" . $idUsuarioAmigo . ") AND (idUsuarioReceiver= " . $idUsuarioPrincipal . " or idUsuarioReceiver=" . $idUsuarioAmigo . ")";
+
+        if (mysqli_query(self::$conexion, $sentencia)) {
+            $ok = true;
+        }
+
+        self::cerrarConex();
+        return $ok;
+    }
+
 }

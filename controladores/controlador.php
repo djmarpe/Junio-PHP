@@ -277,7 +277,7 @@ if (isset($_REQUEST['verGenteCercana'])) {
                     }
                     break;
                 case 'interes':
-                    if ($preferenciaLogin->getValue() == 'Ambos' && ($usuarioAux->getSexo() == 'Hombres' || $usuarioAux->getSexo() == 'Mujeres')) {
+                    if ($preferenciaLogin->getValue() == 'Ambos' && ($usuarioAux->getSexo() == 'Hombre' || $usuarioAux->getSexo() == 'Mujer')) {
                         $claves++;
                     }
                     if ($preferenciaLogin->getValue() == 'Mujeres' && $usuarioAux->getSexo() == 'Mujer' && ($preferenciaAux->getValue() == 'Hombres' || $preferenciaAux->getValue() == 'Ambos')) {
@@ -516,4 +516,56 @@ if (isset($_REQUEST['verMensajesRecibidos'])) {
     $_SESSION['mensajesRecibidos'] = $listaMensajesRecibidos;
     $_SESSION['estoyEn'] = 'verMensajesRecibidos';
     header('Location: ../Vistas/verMensajesRecibidos.php');
+}
+
+if (isset($_REQUEST['verAmigos'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+
+    $listaAmigos = Conexion::getAmigos($usuarioLogin->getId());
+    $_SESSION['misAmigos'] = $listaAmigos;
+
+    header('Location: ../Vistas/verAmigos.php');
+}
+
+if (isset($_REQUEST['verAmigo'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+    $listaAmigos = $_SESSION['misAmigos'];
+    $idUsuarioVer = $_REQUEST['idUsuario'];
+
+    for ($i = 0; $i < sizeof($listaAmigos); $i++) {
+        $usuarioAux = $listaAmigos[$i];
+        if ($usuarioAux->getId() == $idUsuarioVer) {
+            $elegido = $listaAmigos[$i];
+            $usuarioElegido = new UsuarioPreferencias();
+            $usuarioElegido->setIdUsuario($elegido->getId());
+            $usuarioElegido->setNombreUsuario($elegido->getName());
+            $usuarioElegido->setApellidosUsuario($elegido->getSurname());
+            $usuarioElegido->setFechaNacimientoUsuario($elegido->getFecNac());
+            $usuarioElegido->setDescripcion($elegido->getDescription());
+            $usuarioElegido->setEmail($elegido->getEmail());
+            $usuarioElegido->setPais($elegido->getCountry());
+            $usuarioElegido->setLocalidad($elegido->getCity());
+            $usuarioElegido->setSexo($elegido->getSex());
+            $usuarioElegido->setPreferencias(Conexion::getUsuarioLoginPreferencias($idUsuarioVer));
+
+            $_SESSION['usuarioElegido'] = $usuarioElegido;
+            $_SESSION['mensaje'] = '';
+        }
+    }
+    header('Location: ../Vistas/verAmigo.php');
+}
+
+if (isset($_REQUEST['borrarAmigo'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+    $idUsuarioAmigo = $_REQUEST['idUsuario'];
+
+    if (Conexion::eliminarAmigo($usuarioLogin->getId(), $idUsuarioAmigo)) {
+        $listaAmigos = Conexion::getAmigos($usuarioLogin->getId());
+        $_SESSION['misAmigos'] = $listaAmigos;
+        $_SESSION['mensaje'] = 'Usuario eliminado correctamente';
+        header('Location: ../Vistas/verAmigos.php');
+    } else {
+        $_SESSION['mensaje'] = 'Error al borrar el usuario';
+        header('Location: ../Vistas/verAmigo.php');
+    }
 }

@@ -17,7 +17,7 @@
                             <small class="d-block">-> ¿Relación seria? <-</small>
                             <input id="rel_si" type="radio" name="preferencia_relacionSeria" value="si" selected>
                             <label for="rel_si">Si</label>
-                            <input id="rel_no" type="radio" name="preferencia_relacionSeria" value=""no>
+                            <input id="rel_no" type="radio" name="preferencia_relacionSeria" value="no">
                             <label for="rel_no">No</label>
                         </div>
                         <div class="my-3 col-12 col-md-5 text-center">

@@ -10,7 +10,7 @@ and open the template in the editor.
         <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="../css/all.min.css">
         <link rel="stylesheet" type="text/css" href="../css/miCss.css">
-        <title>Gente cercana</title>
+        <title>Mis amigos</title>
     </head>
     <body class="background-dark-blue">
         <?php
@@ -18,10 +18,10 @@ and open the template in the editor.
         require_once '../Clases/UsuarioPreferencias.php';
         session_start();
         $usuarioLogin = $_SESSION['usuarioLogin'];
-        $usuariosCandidatos = [];
+        $misAmigos = [];
 
-        if (isset($_SESSION['usuariosCandidatos'])) {
-            $usuariosCandidatos = $_SESSION['usuariosCandidatos'];
+        if (isset($_SESSION['misAmigos'])) {
+            $misAmigos = $_SESSION['misAmigos'];
         }
         ?>
         <div class="row m-3">
@@ -62,26 +62,26 @@ and open the template in the editor.
             <div class="col-12 bg-white">
                 <div class="row m-0 justify-content-between">
                     <?php
-                    for ($i = 0; $i < sizeof($usuariosCandidatos); $i++) {
-                        $usuarioAux = $usuariosCandidatos[$i];
+                    for ($i = 0; $i < sizeof($misAmigos); $i++) {
+                        $usuarioAux = $misAmigos[$i];
                         ?>
                         <form action="../controladores/controlador.php" method="POST" class="col-12 col-md-5">
                             <div class="m-2 p-2 rounded" style="border: 3px solid #014957;">
-                                <input type="hidden" value="<?= $usuarioAux->getIdUsuario() ?>" name="idUsuario">
-                                <h5 class="m-0 text-center"><?= $usuarioAux->getNombreUsuario() . ' ' . $usuarioAux->getApellidosUsuario() ?></h5>
-                                <small class="d-block my-3"><?= $usuarioAux->getDescripcion() ?></small>
+                                <input type="hidden" value="<?= $usuarioAux->getId() ?>" name="idUsuario">
+                                <h5 class="m-0 text-center"><?= $usuarioAux->getName() . ' ' . $usuarioAux->getSurname() ?></h5>
+                                <small class="d-block my-3"><?= $usuarioAux->getDescription() ?></small>
                                 <div class="row my-3">
                                     <div class="col-12 col-sm-6">
                                         <strong>País:</strong>
-                                        <small><?= $usuarioAux->getPais() ?></small>
+                                        <small><?= $usuarioAux->getCountry() ?></small>
                                     </div>
                                     <div class="col-12 col-sm-6">
                                         <strong>Localidad:</strong>
-                                        <small><?= $usuarioAux->getLocalidad() ?></small>
+                                        <small><?= $usuarioAux->getCity() ?></small>
                                     </div>
                                 </div>
                                 <div class="mt-3 text-center">
-                                    <input class="btn btn-outline-primary" type="submit" name="verMatch" value="Ver en detalle">
+                                    <input class="btn btn-outline-primary" type="submit" name="verAmigo" value="Ver en detalle">
                                 </div>
                             </div>
                         </form>
