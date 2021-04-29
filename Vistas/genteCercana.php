@@ -87,6 +87,14 @@ and open the template in the editor.
                         </form>
                         <?php
                     }
+
+                    if (sizeof($usuariosCandidatos) == 0) {
+                        ?>
+                    <div class="col-12 m-0 my-5">
+                        <strong>Lo sentimos, no hay usuarios compatibles con usted en estos momento. Inténtelo de nuevo más adelante.</strong>
+                    </div>
+                        <?php
+                    }
                     ?>
                 </div>
             </div>

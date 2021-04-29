@@ -52,7 +52,7 @@ and open the template in the editor.
                             <?php
                         }
                         ?>
-                        <li class = "breadcrumb-item" aria-current = "page">Gente cercana</li>
+                        <li class = "breadcrumb-item" aria-current = "page">Ver amigos</li>
                     </ol>
                 </nav>
             </div>
