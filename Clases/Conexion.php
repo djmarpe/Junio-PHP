@@ -238,6 +238,19 @@ class Conexion {
         self::cerrarConex();
     }
 
+    public static function editPreferencia($preferencia) {
+        self::abrirConex();
+        $ok = false;
+
+        $sentencia1 = "UPDATE preferences SET value = '" . $preferencia->getValue() . "' WHERE idUsuario = " . $preferencia->getIdUsuario() . " AND tipo = '" . $preferencia->getType()."'";
+
+        if (mysqli_query(self::$conexion, $sentencia1)) {
+            $ok = true;
+        }
+
+        self::cerrarConex();
+    }
+
     public static function getAmigos($idUsuario) {
         self::abrirConex();
 
@@ -777,6 +790,29 @@ class Conexion {
 
         if (mysqli_query(self::$conexion, $sentencia)) {
             $ok = true;
+        }
+
+        self::cerrarConex();
+        return $ok;
+    }
+
+    public static function editProfile($personaAux) {
+        self::abrirConex();
+
+        $ok = false;
+
+        if ($personaAux->getPasswd() == '') {
+            $sentencia = "UPDATE user SET name = '" . $personaAux->getName() . "', surname = '" . $personaAux->getSurname() . "', email='" . $personaAux->getEmail() . "', description='" . $personaAux->getDescription() . "', country='" . $personaAux->getCountry() . "', city='" . $personaAux->getCity() . "' WHERE id = " . $personaAux->getId();
+
+            if (mysqli_query(self::$conexion, $sentencia)) {
+                $ok = true;
+            }
+        } else {
+            $sentencia = "UPDATE user SET name = '" . $personaAux->getName() . "', surname = '" . $personaAux->getSurname() . "', email='" . $personaAux->getEmail() . "', passwd ='" . $personaAux->getPasswd() . "', description='" . $personaAux->getDescription() . "', country='" . $personaAux->getCountry() . "', city='" . $personaAux->getCity() . "' WHERE id = " . $personaAux->getId();
+
+            if (mysqli_query(self::$conexion, $sentencia)) {
+                $ok = true;
+            }
         }
 
         self::cerrarConex();
