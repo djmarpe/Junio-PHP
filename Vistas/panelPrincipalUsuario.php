@@ -57,7 +57,9 @@ and open the template in the editor.
             <div class="col-12 bg-white">
                 <div class="row m-0 justify-content-between">
                     <div class="col-12 col-md-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
-                        <p>Mi perfil</p>
+                        <h5 class="m-0 py-1">Mis perfil</h5>
+                        <small class="d-block">Entra para ver tu perfil. Podrás editarlo, cambiar tu contraseña, la descripción, incluso las preferencias de tus intereses.</small>
+                        <a href="../controladores/controlador.php?miPerfil=miPerfil" class="btn btn-outline-primary mt-4">Ver mi perfil</a>
                     </div>
                     <div class="col-12 col-md-5 m-2 p-2 rounded" style="border: 3px solid #014957;">
                         <h5 class="m-0 py-1">Mis amigos</h5>

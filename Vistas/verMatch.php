@@ -16,6 +16,7 @@ and open the template in the editor.
         <?php
         require_once '../Clases/Persona.php';
         require_once '../Clases/UsuarioPreferencias.php';
+        require_once '../Clases/Preferencia.php';
         session_start();
         $usuarioLogin = $_SESSION['usuarioLogin'];
         $usuarioMatch = $_SESSION['usuarioElegido'];
@@ -94,6 +95,48 @@ and open the template in the editor.
                                 <input type="hidden" id="emailMatch" value="<?= $usuarioMatch->getEmail() ?>">
                                 <input type="hidden" id="emailUsuario" value="<?= $usuarioLogin->getEmail() ?>">
                                 <small><?= $usuarioMatch->getEmail() ?></small>
+                            </div>
+                            <div class="col-12 my-3">
+                                <h5 class="m-0 text-center">Preferencias del usuario</h5>
+                            </div>
+                            <?php
+                            $preferenciasUsuario = $usuarioMatch->getPreferencias();
+                            $preferencia1 = $preferenciasUsuario[0];
+                            $preferencia2 = $preferenciasUsuario[1];
+                            $preferencia3 = $preferenciasUsuario[2];
+                            $preferencia4 = $preferenciasUsuario[3];
+                            $preferencia5 = $preferenciasUsuario[4];
+                            $preferencia6 = $preferenciasUsuario[5];
+                            ?>
+                            <div class="col-12 col-sm-6 my-3 text-center">
+                                <strong class="d-block">-> ¿Relación seria? <-</strong>
+                                <small>Valor:</small>
+                                <?= $preferencia1->getValue() ?>
+                            </div>
+                            <div class="col-12 col-sm-6 my-3 text-center">
+                                <strong class="d-block">-> Interes por el deporte <-</strong>
+                                <small>Valor:</small>
+                                <?= $preferencia2->getValue() . '/10' ?>
+                            </div>
+                            <div class="col-12 col-sm-6 my-3 text-center">
+                                <strong class="d-block">-> Interes por el arte <-</strong>
+                                <small>Valor:</small>
+                                <?= $preferencia3->getValue() . '/10' ?>
+                            </div>
+                            <div class="col-12 col-sm-6 my-3 text-center">
+                                <strong class="d-block">-> Interes por la política <-</strong>
+                                <small>Valor:</small>
+                                <?= $preferencia4->getValue() . '/10' ?>
+                            </div>
+                            <div class="col-12 col-sm-6 my-3 text-center">
+                                <strong class="d-block">-> ¿Quíere tener hijos? <-</strong>
+                                <small>Valor:</small>
+                                <?= $preferencia5->getValue() ?>
+                            </div>
+                            <div class="col-12 col-sm-6 my-3 text-center">
+                                <strong class="d-block">-> Interes en... <-</strong>
+                                <small>Valor:</small>
+                                <?= $preferencia6->getValue() ?>
                             </div>
                         </div>
                     </div>
