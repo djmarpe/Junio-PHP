@@ -569,3 +569,108 @@ if (isset($_REQUEST['borrarAmigo'])) {
         header('Location: ../Vistas/verAmigo.php');
     }
 }
+
+if (isset($_REQUEST['miPerfil'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+
+    //Obtenemos los datos del usuario login (usuario clave)
+    $usuarioLoginPreferencias = new UsuarioPreferencias();
+    $usuarioLoginPreferencias->setIdUsuario($usuarioLogin->getId());
+    $usuarioLoginPreferencias->setNombreUsuario($usuarioLogin->getName());
+    $usuarioLoginPreferencias->setApellidosUsuario($usuarioLogin->getSurname());
+    $usuarioLoginPreferencias->setFechaNacimientoUsuario($usuarioLogin->getFecNac());
+    $usuarioLoginPreferencias->setDescripcion($usuarioLogin->getDescription());
+    $usuarioLoginPreferencias->setEmail($usuarioLogin->getEmail());
+    $usuarioLoginPreferencias->setPais($usuarioLogin->getCountry());
+    $usuarioLoginPreferencias->setLocalidad($usuarioLogin->getCity());
+    $usuarioLoginPreferencias->setSexo($usuarioLogin->getSex());
+    //Obtenemos las preferencias del usuario
+    $usuarioLoginPreferencias->setPreferencias(Conexion::getUsuarioLoginPreferencias($usuarioLogin->getId()));
+
+    $_SESSION['usuarioLoginPreferencias'] = $usuarioLoginPreferencias;
+
+    header('Location: ../Vistas/miPerfil.php');
+}
+
+if (isset($_REQUEST['actualizarPerfil'])) {
+    $personaAux = new Persona();
+    $personaAux->setId($_REQUEST['idUsuario']);
+    $personaAux->setName($_REQUEST['usuario_nombre']);
+    $personaAux->setSurname($_REQUEST['usuario_apellidos']);
+    $personaAux->setEmail($_REQUEST['usuario_email']);
+    $personaAux->setPasswd($_REQUEST['usuario_passwd']);
+    $personaAux->setCountry($_REQUEST['usuario_pais']);
+    $personaAux->setCity($_REQUEST['usuario_localidad']);
+    $personaAux->setDescription($_REQUEST['usuario_descripcion']);
+
+    if (Conexion::editProfile($personaAux)) {
+        $usuarioLogin = Conexion::getUserLogin($personaAux->getEmail());
+        $_SESSION['usuarioLogin'] = $usuarioLogin;
+        header('Location: ../Vistas/miPerfil.php');
+    }
+}
+
+if (isset($_REQUEST['actualizarPreferencias'])) {
+    $usuarioLogin = $_SESSION['usuarioLogin'];
+
+    $preferencia_relacionSeria = $_REQUEST['usuario_relacionSeria'];
+    $preferencia_deporte = $_REQUEST['usuario_deporte'];
+    $preferencia_arte = $_REQUEST['usuario_arte'];
+    $preferencia_politica = $_REQUEST['usuario_politica'];
+    $preferencia_hijos = $_REQUEST['usuario_hijos'];
+    $preferencia_interes = $_REQUEST['usuario_interes'];
+
+    $preferencia1 = new Preferencia();
+    $preferencia1->setIdUsuario($usuarioLogin->getId());
+    $preferencia1->setType('relacion');
+    $preferencia1->setValue($preferencia_relacionSeria);
+    Conexion::editPreferencia($preferencia1);
+
+    $preferencia2 = new Preferencia();
+    $preferencia2->setIdUsuario($usuarioLogin->getId());
+    $preferencia2->setType('deporte');
+    $preferencia2->setValue($preferencia_deporte);
+    Conexion::editPreferencia($preferencia2);
+
+    $preferencia3 = new Preferencia();
+    $preferencia3->setIdUsuario($usuarioLogin->getId());
+    $preferencia3->setType('arte');
+    $preferencia3->setValue($preferencia_arte);
+    Conexion::editPreferencia($preferencia3);
+
+    $preferencia4 = new Preferencia();
+    $preferencia4->setIdUsuario($usuarioLogin->getId());
+    $preferencia4->setType('politica');
+    $preferencia4->setValue($preferencia_politica);
+    Conexion::editPreferencia($preferencia4);
+
+    $preferencia5 = new Preferencia();
+    $preferencia5->setIdUsuario($usuarioLogin->getId());
+    $preferencia5->setType('hijo');
+    $preferencia5->setValue($preferencia_hijos);
+    Conexion::editPreferencia($preferencia5);
+
+    $preferencia6 = new Preferencia();
+    $preferencia6->setIdUsuario($usuarioLogin->getId());
+    $preferencia6->setType('interes');
+    $preferencia6->setValue($preferencia_interes);
+    Conexion::editPreferencia($preferencia6);
+
+    //Obtenemos los datos del usuario login (usuario clave)
+    $usuarioLoginPreferencias = new UsuarioPreferencias();
+    $usuarioLoginPreferencias->setIdUsuario($usuarioLogin->getId());
+    $usuarioLoginPreferencias->setNombreUsuario($usuarioLogin->getName());
+    $usuarioLoginPreferencias->setApellidosUsuario($usuarioLogin->getSurname());
+    $usuarioLoginPreferencias->setFechaNacimientoUsuario($usuarioLogin->getFecNac());
+    $usuarioLoginPreferencias->setDescripcion($usuarioLogin->getDescription());
+    $usuarioLoginPreferencias->setEmail($usuarioLogin->getEmail());
+    $usuarioLoginPreferencias->setPais($usuarioLogin->getCountry());
+    $usuarioLoginPreferencias->setLocalidad($usuarioLogin->getCity());
+    $usuarioLoginPreferencias->setSexo($usuarioLogin->getSex());
+    //Obtenemos las preferencias del usuario
+    $usuarioLoginPreferencias->setPreferencias(Conexion::getUsuarioLoginPreferencias($usuarioLogin->getId()));
+
+    $_SESSION['usuarioLoginPreferencias'] = $usuarioLoginPreferencias;
+
+    header('Location: ../Vistas/miPerfil.php');
+}
